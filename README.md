@@ -1,31 +1,36 @@
-# Trading Performance Cockpit v4
+# Trading Performance Cockpit V5
 
-Cockpit personnel en validation assistée, pour scalping + day trading, priorité Gold et risque de référence plafonné à 0,50 % par trade.
+Cockpit web personnel pour le scalping et le day trading, priorité Gold / SMC, avec profils FTMO et Vantage.
 
-## Fonctionnalités
-- Dashboard de départ avec statuts WAIT / READY / LOCK et checklist pré-session.
-- TradingView intégré : ticker multi-marchés, graphique et choix du symbole / timeframe.
-- Sources de signaux BOTH : graphique TradingView (observation visuelle) + moteur de règles du cockpit (confirmations saisies manuellement).
-- Trois setups SMC : Sweep + MSS + FVG, Trend continuation et SMT + confirmation.
-- Calculateur de taille de position fondé sur l'équité, le stop, le tick size, le tick value, le lot step et les coûts.
-- Risk Guardian : risque ouvert, budget disponible, limite journalière interne et verrou de session.
-- Validation humaine du ticket, journal local, métriques en R et export JSON.
-- Profils FTMO et Vantage, valeurs de départ modifiables manuellement.
+## Configuration retenue
+- Autorité : **ASSIST**. Le cockpit conseille et vérifie ; la décision et l'exécution restent humaines.
+- Signaux : **BOTH**. Pré-alerte de sweep puis confirmation par displacement, MSS et FVG.
+- Risque de référence : **0,50 % maximum par trade** dans le calculateur. Ce plafond est un paramètre interne, pas une règle officielle FTMO ou Vantage.
+- Aucun pont MT5, aucune connexion broker, aucun ordre automatique.
 
-## Utilisation
-Ouvre https://rocalle58-create.github.io/session-desk/ dans Chrome ou Edge. Les widgets TradingView nécessitent Internet. Choisis l'actif, le timeframe et le compte ; mets à jour l'équité, la devise et les spécifications réelles du contrat auprès du broker.
+## Modules
+- TradingView intégré : ticker et graphique interactif.
+- Macro desk : calendrier économique TradingView et grille qualitative des facteurs macro (DXY, US 10Y, taux réels, Fed, régime risk-on/off, COT).
+- Biais multi-timeframe Gold et DXY : M1, M5, M15, M30, H1, H4, D1 et W1.
+- Corrélations glissantes de Pearson entre le DXY et les actifs importés, sur un timeframe sélectionné.
+- Volatility monitor : ATR(14), ATR relatif à sa moyenne récente et régime de volatilité sur toutes les unités importées.
+- Détecteur SMT intermarket sur pivots comparables et actifs configurables (DXY, Silver, EURUSD, GBPUSD).
+- Radar en deux étapes : pré-alerte de sweep puis confirmation par displacement, MSS et FVG.
+- Risk Guardian, ticket de calcul de lots, checklist pré-session, journal et sauvegarde locale complète.
 
-## Limites importantes
-- Aucun pont MT5, aucune connexion broker et aucun ordre envoyé par le site. L'exécution reste manuelle sur ta plateforme.
-- Le widget TradingView est intégré, mais ses données OHLC ne sont pas accessibles au JavaScript du cockpit. Le moteur Cockpit évalue les conditions que tu coches ; il ne prétend pas détecter automatiquement les sweeps, MSS ou FVG depuis TradingView. Les deux sources sont côte à côte, pas fusionnées en un flux automatique.
-- Les cotations TradingView peuvent être différées et différer du Bid/Ask d'exécution.
-- Tick size, tick value, coûts et pas de lot doivent être vérifiés pour chaque symbole et broker. Les valeurs initiales du ticket sont des exemples.
-- Les profils de comptes affichent des valeurs de départ modifiables ; le site ne lit pas le solde ni les règles officielles FTMO/Vantage.
-- Le risque de 0,50 % est un plafond de référence interne, pas une promesse de rentabilité. Le journal est saisi manuellement et stocké dans le navigateur.
-- STOP SESSION bloque les nouvelles validations dans le cockpit ; il ne ferme aucune position et ne remplace pas un stop placé côté broker.
+## Données et limites
+Le widget TradingView affiche le graphique et le calendrier, mais ne met pas ses chandeliers à disposition du JavaScript de cette page. Pour cette raison, l'analyse multi-timeframe, les corrélations, l'ATR, les SMT et le radar de signaux utilisent les fichiers OHLC CSV exportés depuis TradingView puis importés dans le cockpit.
 
-## Données et sauvegarde
-Les sessions et le journal restent dans le stockage local du navigateur. Exporte régulièrement le journal JSON.
+Le moteur recalcule régulièrement les indicateurs sur les historiques importés, mais ce recalcul n'actualise pas les données de marché. Réimporte un CSV pour actualiser les séries. L'horodatage doit être cohérent entre les instruments pour les corrélations et SMT.
 
-## Publication
-GitHub Pages publie la branche main. L'application compressée est découpée en dix fragments texte cockpit-v4-part-00.txt à cockpit-v4-part-09.txt, assemblés par index.html.
+Les taux, la Fed, le positionnement COT et le régime de risque sont des entrées qualitatives à renseigner manuellement. Le calendrier TradingView est un widget externe : vérifie les chiffres, l'heure de Paris et les annonces auprès des sources officielles. Aucun flux macro fondamental en temps réel n'est prétendu.
+
+Les corrélations varient et n'impliquent pas de causalité. Un SMT est une divergence potentielle, pas un signal autonome. Les seuils et règles sont heuristiques et doivent être validés par des tests historiques hors échantillon, avec spread, commissions et slippage.
+
+## Données locales
+Les journaux, réglages et historiques OHLC importés sont stockés dans le navigateur. Ils ne se synchronisent pas entre appareils. Utilise Exporter sauvegarde complète pour conserver journal, historiques et paramètres macro.
+
+## Déploiement
+GitHub Pages est publié depuis rocalle58-create/session-desk par le workflow .github/workflows/pages.yml.
+
+Outil d'organisation et de contrôle, pas un conseil financier. Aucun indicateur, setup ou garde-fou ne garantit une session rentable.
