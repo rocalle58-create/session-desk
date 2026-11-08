@@ -40,3 +40,16 @@ Le cockpit est un outil d'organisation et de contrôle, pas un conseil financier
 
 ## Publication
 GitHub Pages : https://rocalle58-create.github.io/session-desk/
+
+## Trade Command Center — mode manuel
+L'onglet **06 · Trade Command Center** regroupe :
+- **Liquidity Radar** : PDH/PDL, PWH/PWL, PMH/PML et plages Asia/London/New York calculées sur les bougies MT5 reçues (heure de Paris).
+- **Smart Money Scanner** : sweep, rupture de pivots, displacement, FVG, OB candidat et premium/discount sur bougies clôturées. Les lectures restent heuristiques et doivent être contrôlées visuellement.
+- **Session Control** : fenêtres horaires configurables en heure de Paris.
+- **Risk Guardian** : tick, spread, marge, positions sans SL, risque ouvert et P&L quotidien réalisé + flottant du pont (UTC). Les seuils sont réglables.
+- **News Shock Radar** : événements à fort impact saisis manuellement avec fenêtre de prudence avant/après. Le calendrier TradingView embarqué n'est pas lu automatiquement par le site.
+- **Performance Lab** : stats des positions clôturées via l'endpoint local `/api/history`, commissions/swaps/frais inclus. Les positions toujours ouvertes sont exclues.
+- **Alert Engine** : alertes en page et notifications navigateur optionnelles. Le navigateur et le pont doivent rester actifs.
+
+### Mise à jour du connecteur
+Relance `install_mt5_bridge.bat` pour récupérer le nouveau pont dans `%USERPROFILE%\TradingPerformanceCockpit\MT5Bridge`. Le script préserve `bridge_config.local.json` et donc la clé locale. Puis relance `start_mt5_bridge.bat`. L'endpoint d'historique est strictement en lecture seule. Aucune fonction d'envoi, modification ou fermeture d'ordre n'est présente.
