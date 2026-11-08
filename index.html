@@ -221,7 +221,7 @@ a:hover{color:#b6fff5}
        <div class="field"><label for="mt5SymBtc">BTC/USD</label><input id="mt5SymBtc" value="BTCUSD" spellcheck="false"></div>
        <div class="field"><label for="mt5SymEth">ETH/USD</label><input id="mt5SymEth" value="ETHUSD" spellcheck="false"></div>
     </div>
-    <p class="small">Les noms diffèrent selon le broker : XAUUSD+, EURUSD., BTCUSDm, etc. Renseigne le symbole exact de Market Watch pour chaque actif ; les champs vides sont ignorés. DXY et les cryptos ne sont pas proposés par tous les comptes.</p>
+    <p class="small">Les noms diffèrent selon le broker : XAUUSD+, EURUSD., BTCUSDm, etc. Renseigne le symbole exact de Market Watch pour chaque actif ; les champs vides sont ignorés. DXY et les cryptos ne sont pas proposés par tous les comptes. Les correspondances sont mémorisées séparément pour FTMO et Vantage sur ce navigateur.</p>
   </details>
   <div class="mt5-live-grid">
     <div class="mt5-live-tile"><span class="small" id="mt5BidLabel">Marché actif · Bid</span><b id="mt5GoldBid">—</b><small id="mt5GoldBidTime">En attente de cotation</small></div>
@@ -539,6 +539,9 @@ const mt5Base=()=>($('mt5BaseUrl').value.trim().replace(/\/$/,'')||'http://127.0
 const mt5Key=()=>sessionStorage.getItem(mt5KeyName)||$('mt5ApiKey').value.trim();
 function mt5Profile(){return $('account').value==='vantage'?'Vantage':'FTMO'}
 function mt5Map(){const out={};Object.entries(mt5MapFields).forEach(([logical,id])=>{const val=$(id).value.trim();if(val)out[logical]=val});return out}
+const mt5MapStorageKey='tpcMt5SymbolsByProfileV1';
+function mt5LoadMap(){try{const all=JSON.parse(localStorage.getItem(mt5MapStorageKey)||'{}'),saved=all[$('account').value]||{};Object.entries(mt5MapFields).forEach(([logical,id])=>{if(typeof saved[logical]==='string')$(id).value=saved[logical]})}catch(e){console.warn('Lecture des correspondances MT5 impossible',e)}}
+function mt5SaveMap(){try{const all=JSON.parse(localStorage.getItem(mt5MapStorageKey)||'{}');all[$('account').value]=Object.fromEntries(Object.entries(mt5MapFields).map(([logical,id])=>[logical,$(id).value.trim()]));localStorage.setItem(mt5MapStorageKey,JSON.stringify(all))}catch(e){console.warn('Sauvegarde des correspondances MT5 impossible',e)}}
 function activeNearDistance(){try{const v=JSON.parse(localStorage.getItem('tpcMarketNearDistances')||'{}');return Number(v[activeMarket]??marketCatalog[activeMarket]?.near??3)}catch{return marketCatalog[activeMarket]?.near??3}}
 function setActiveMarket(next){if(!marketCatalog[next])return;if($('ccNearDistance')&&Number($('ccNearDistance').value)>0){let vals={};try{vals=JSON.parse(localStorage.getItem('tpcMarketNearDistances')||'{}')}catch{}vals[activeMarket]=Number($('ccNearDistance').value);localStorage.setItem('tpcMarketNearDistances',JSON.stringify(vals))}activeMarket=next;localStorage.setItem('tpcActiveMarket',next);$('activeMarketSelect').value=next;$('chartAsset').value=next;$('ohlcSymbol').value=next;$('activeMarketMission').textContent=activeMarketName()+' · '+next;$('biasKpiLabel').textContent='Biais '+next;$('autoBriefTitle').textContent='AUTO MARKET BRIEFING · '+next;$('ccActivePriceLabel').textContent=activeMarketName()+' · BID / ASK';$('mt5BidLabel').textContent=activeMarketName()+' · Bid';$('mt5AskLabel').textContent=activeMarketName()+' · Ask';if($('ccNearDistance'))$('ccNearDistance').value=activeNearDistance();if($('smtPairAuto').value===next)$('smtPairAuto').value=next==='DXY'?'EURUSD':'DXY';ccLastBias=null;mt5LastQuote=null;$('tickSize').value='';$('tickValue').value='';$('lotStep').value='';$('tickSize').placeholder='En attente · '+next;$('tickValue').placeholder='En attente · '+next;$('lotStep').placeholder='En attente · '+next;calcTicket();$('mt5GoldBid').textContent='—';$('mt5GoldAsk').textContent='—';$('mt5GoldBidTime').textContent='En attente de cotation';$('mt5GoldSpread').textContent='Spread : —';$('mt5GoldSpec').textContent='—';$('mt5GoldVolume').textContent='Pas de lot : —';$('mt5UseQuoteBtn').disabled=true;loadChart();renderMarketIntel();if(typeof ccRenderCommandCenter==='function')ccRenderCommandCenter();if(mt5Live){mt5PollMarkets();mt5PollQuotes()}}
 function mt5Header(){return {'X-API-Key':mt5Key(),'Accept':'application/json'}}
@@ -677,8 +680,8 @@ $('mt5DisconnectBtn').addEventListener('click',mt5Disconnect);
 $('mt5UseQuoteBtn').addEventListener('click',()=>{if(!mt5LastQuote)return;const buy=$('signalDirection').value==='long';$('entry').value=(buy?mt5LastQuote.ask:mt5LastQuote.bid).toFixed(Number(mt5LastQuote.meta?.digits??2));calcTicket();refreshRisk()});
 $('mt5BaseUrl').value=sessionStorage.getItem(mt5BaseName)||'http://127.0.0.1:8765';
 $('mt5ApiKey').value=sessionStorage.getItem(mt5KeyName)||'';
-$('account').addEventListener('change',()=>{if(mt5Live){mt5Disconnect().then(()=>{mt5State('PROFIL MODIFIÉ · RECONNECTE','amber')})}});
-Object.values(mt5MapFields).forEach(id=>$(id).addEventListener('change',()=>{if(mt5Live)mt5PollMarkets()}));
+$('account').addEventListener('change',()=>{mt5LoadMap();if(mt5Live){mt5Disconnect().then(()=>{mt5State('PROFIL MODIFIÉ · RECONNECTE','amber')})}});
+mt5LoadMap();Object.values(mt5MapFields).forEach(id=>$(id).addEventListener('change',()=>{mt5SaveMap();if(mt5Live)mt5PollMarkets()}));
 $('activeMarketSelect').value=activeMarket;$('activeMarketSelect').addEventListener('change',e=>setActiveMarket(e.target.value));$('chartAsset').addEventListener('change',e=>{if(marketCatalog[e.target.value])setActiveMarket(e.target.value);else loadChart()});$('ohlcSymbol').value=activeMarket;
 $('activeMarketMission').textContent=activeMarketName()+' · '+activeMarket;$('biasKpiLabel').textContent='Biais '+activeMarket;$('autoBriefTitle').textContent='AUTO MARKET BRIEFING · '+activeMarket;$('ccActivePriceLabel').textContent=activeMarketName()+' · BID / ASK';$('mt5BidLabel').textContent=activeMarketName()+' · Bid';$('mt5AskLabel').textContent=activeMarketName()+' · Ask';
 
