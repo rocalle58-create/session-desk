@@ -12,7 +12,7 @@ from urllib.parse import parse_qs, urlparse
 ROOT = Path(__file__).resolve().parent
 CFG = ROOT / "bridge_config.local.json"
 EXAMPLE = ROOT / "bridge_config.example.json"
-HOST, PORT, VERSION = "127.0.0.1", 8765, "2.1-readonly-macro"
+HOST, PORT, VERSION = "127.0.0.1", 8765, "2.2-readonly-command-center"
 ORIGINS = {"https://rocalle58-create.github.io", "http://127.0.0.1:8000", "http://localhost:8000", "http://127.0.0.1:5500", "http://localhost:5500"}
 LOCK = threading.RLock()
 mt5 = None
