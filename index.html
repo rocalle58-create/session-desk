@@ -1,32 +1,14 @@
 <!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#08111f"><title>Trading Performance Cockpit</title>
-<style>
-body{margin:0;min-height:100vh;display:grid;place-items:center;background:#08111f;color:#e9f1fc;font:16px system-ui}.box{max-width:520px;padding:28px;text-align:center;border:1px solid #233852;border-radius:18px;background:#101d30}p{color:#92a6c3}a{color:#58d7d0}
-</style>
-</head>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#08111e"><title>Trading Performance Cockpit</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#08111e;color:#e9f1fc;font:16px system-ui}.box{max-width:560px;padding:26px;text-align:center;border:1px solid #263b56;border-radius:18px;background:#101c2d}p{color:#9aabc3}</style></head>
 <body><div class="box"><h1>Trading Performance Cockpit</h1><p id="status">Chargement du cockpit…</p></div>
 <script>
 (async()=>{try{
-const names=["site.gz.0","site.gz.1","site.gz.2","site.gz.3"];
-const parts=await Promise.all(names.map(async name=>{const r=await fetch("./"+name+"?v=3",{cache:"no-store"});if(!r.ok)throw new Error("Fichier manquant : "+name);return r.text()}));
-const b64=parts.join("").trim(),binary=atob(b64),bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));
-if(!("DecompressionStream" in window))throw new Error("Navigateur incompatible. Mets Chrome ou Edge à jour.");
-let html=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"))).text();
-const tvOnlyCss = '<style id="tpc-tv-only">#panel-execution,.tab[data-tab="execution"],#bridgeDialog,#applySignalBtn,#connectProfileBtn,#saveBridgeBtn,#closeBridgeDialog{display:none!important}.hero-side .metric:nth-child(n+2){display:none!important}.card:has(#positionsTable){display:none!important}.row:has(#mt5Mid){display:none!important}</style>';
-html=html.replace("</head>",tvOnlyCss+"</head>");
-html=html.replace('id="connectBtn">Connecter MT5','id="connectBtn">Ouvrir TradingView ↗');
-html=html.replace('id="bridgeText">MT5 hors ligne','id="bridgeText">TradingView intégré');
-html=html.replace('MT5 · Bid / Ask','Référence TradingView');
-html=html.replace('Graphique de référence TradingView. Le flux MT5 exact apparaît séparément quand le pont local est connecté.','Graphique TradingView intégré. Le prix affiché est indicatif : vérifie le Bid/Ask de ton broker avant chaque entrée.');
-html=html.replace('Compte MT5 requis','Profil sélectionné');
-html=html.replace("Historique MT5 · journée UTC, indicatif","Donnée non synchronisée au broker");
-html=html.replace("$('connectBtn').onclick=loadBridgeDialog;","$('connectBtn').onclick=()=>{const m={XAUUSD:'OANDA:XAUUSD',XAGUSD:'OANDA:XAGUSD',EURUSD:'FX:EURUSD',GBPUSD:'FX:GBPUSD',USDJPY:'FX:USDJPY',BTCUSD:'BITSTAMP:BTCUSD',ETHUSD:'BITSTAMP:ETHUSD',US100:'CAPITALCOM:US100'};window.open('https://www.tradingview.com/chart/?symbol='+encodeURIComponent(m[$('mainSymbol').value]||'OANDA:XAUUSD'),'_blank','noopener');};");
-html=html.replace("$('refreshQuoteBtn').onclick=()=>{refreshQuote();detectSetup()};","$('refreshQuoteBtn').onclick=updateTV;");
-const tvPatch = '<script>(function(){const m={XAUUSD:"OANDA:XAUUSD",XAGUSD:"OANDA:XAGUSD",EURUSD:"FX:EURUSD",GBPUSD:"FX:GBPUSD",USDJPY:"FX:USDJPY",BTCUSD:"BITSTAMP:BTCUSD",ETHUSD:"BITSTAMP:ETHUSD",US100:"CAPITALCOM:US100"};const b=document.getElementById("connectBtn");if(b){b.textContent="Ouvrir TradingView ↗";b.onclick=()=>window.open("https://www.tradingview.com/chart/?symbol="+encodeURIComponent(m[document.getElementById("mainSymbol")?.value]||"OANDA:XAUUSD"),"_blank","noopener");}const r=document.getElementById("refreshQuoteBtn");if(r){r.textContent="Actualiser le graphique";r.onclick=()=>{const s=document.getElementById("mainSymbol"),u=document.getElementById("chartInterval");if(s&&u&&typeof updateTV==="function")updateTV();};}const t=document.getElementById("bridgeText");if(t)t.textContent="TradingView intégré";const l=document.getElementById("bridgeLamp");if(l)l.className="lamp green";const p=document.getElementById("mainSub");if(p)p.textContent="TradingView fournit le graphique et le ruban de cotations. Prépare tes scénarios SMC, applique tes règles de risque et tiens ton journal. L’exécution reste manuelle sur FTMO ou Vantage.";const s=document.getElementById("tvChartStatus");if(s)s.textContent="TradingView · Graphique de référence. Les cotations peuvent être différées et différer du prix broker.";})();</scr'+'ipt>';
-html=html.replace("</body>",tvPatch+"</body>");
+const names=Array.from({length:10},(_,i)=>'cockpit-v4-part-'+String(i).padStart(2,'0')+'.txt');
+const chunks=await Promise.all(names.map(async name=>{const r=await fetch('./'+name+'?v=4',{cache:'no-store'});if(!r.ok)throw new Error('Fragment introuvable : '+name);return r.text()}));
+const binary=atob(chunks.join('').trim());const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));
+if(!('DecompressionStream' in window))throw new Error('Navigateur incompatible. Mets Chrome ou Edge à jour.');
+const html=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+if(!html.includes('Trading Performance Cockpit')||!html.includes('embed-widget-advanced-chart.js'))throw new Error('Vérification du contenu échouée');
 document.open();document.write(html);document.close();
-}catch(e){document.getElementById("status").textContent="Impossible de charger le cockpit : "+e.message;}})();
+}catch(e){document.getElementById('status').textContent='Erreur de chargement : '+e.message+'. Recharge la page dans quelques instants.';}})();
 </script></body></html>
