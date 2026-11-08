@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Session Desk</title>
+<style>body{font:16px system-ui;background:#0b1020;color:#edf2ff;display:grid;place-items:center;min-height:90vh}.box{max-width:560px;padding:24px;text-align:center}a{color:#60d5d0}</style>
+<div class="box"><h1>Session Desk</h1><p id="status">Chargement du tableau de bord…</p></div>
+<script>
+(async()=>{try{
+const response=await fetch('./app.html.gz.b64');
+if(!response.ok)throw new Error('Fichier application introuvable');
+const binary=atob((await response.text()).trim());
+const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));
+const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+const html=await new Response(stream).text();
+document.open();document.write(html);document.close();
+}catch(e){document.getElementById('status').textContent='Erreur de chargement : '+e.message;}})();
+</script>
