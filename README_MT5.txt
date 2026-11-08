@@ -29,6 +29,10 @@ SÉCURITÉ
 - Le pont écoute uniquement sur 127.0.0.1 ; il n'est pas accessible depuis Internet.
 - La clé API est créée localement dans bridge_config.local.json. Ne la partage pas et ne publie jamais le fichier local.
 - Lecture seule : aucune route d'envoi d'ordre, de modification de SL/TP ou de fermeture de position.
+- Le point d'accès /api/macro récupère des séries publiques FRED (US 10Y nominal/réel, taux effectif Fed, CPI et Core PCE). Ce sont des observations macro publiées, pas des cotations temps réel. Actualisation du cache local : 15 minutes.
+- Les séries sont téléchargées depuis les exports CSV des graphiques FRED ; ce mécanisme peut évoluer côté fournisseur. Le cockpit affiche les dates d'observation et les erreurs éventuelles.
+- L'affichage macro comporte la mention FRED requise : le produit n'est ni approuvé ni certifié par la Federal Reserve Bank of St. Louis.
+- DXY reste automatique uniquement si le symbole DXY existe chez le broker et est renseigné dans la correspondance des symboles. Le COT et le régime risk-on/off restent à valider manuellement.
 - Les données du compte sont lues sur le PC et affichées dans ton navigateur.
 - Le P&L journalier fourni est calculé depuis minuit UTC ; les limites broker/prop firm peuvent avoir un autre découpage et inclure le flottant.
 - Le cockpit et le pont ne garantissent aucun résultat de trading.
