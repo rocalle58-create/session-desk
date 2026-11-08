@@ -11,14 +11,67 @@
 .intel-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px}.intel-tile{background:#0a1524;border:1px solid var(--line);border-radius:11px;padding:11px;min-width:0}.intel-tile .value{font-size:19px;font-weight:900;margin:4px 0}.intel-tile .hint{font-size:10px;color:var(--muted)}.tf-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.tf-cell{background:#0a1524;border:1px solid var(--line);border-radius:10px;padding:10px;min-width:0}.tf-cell b{display:block;font-size:14px;margin-top:3px}.tf-cell small{font-size:10px;color:var(--muted)}.good-text{color:var(--green)}.bad-text{color:var(--red)}.neutral-text{color:var(--amber)}.upload-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:12px;border:1px dashed #496887;border-radius:12px;background:#0a1728}.calendar-widget{height:470px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#0a1524}.calendar-widget .tradingview-widget-container,.calendar-widget .tradingview-widget-container__widget{height:100%;width:100%}.signal-pair{display:grid;grid-template-columns:1fr 1fr;gap:9px}.signal-state{padding:12px;border-radius:11px;background:#0a1524;border:1px solid var(--line)}.signal-state h3{margin:0 0 6px}.signal-state .statusline{font-weight:900;font-size:15px}.intel-note{font-size:10px;color:var(--muted);margin-top:8px}
 @media(max-width:900px){.tf-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.upload-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.signal-pair{grid-template-columns:1fr}}
 @media(max-width:540px){.upload-grid{grid-template-columns:1fr}.tf-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.mt5-live-card{border-color:#2b465d;background:linear-gradient(180deg,rgba(18,40,59,.72),rgba(12,23,37,.96))}
+.mt5-heading h2{font-size:20px}.mt5-readonly-note{margin:12px 0;border-left:3px solid var(--green)}
+.mt5-connect-grid{display:grid;grid-template-columns:minmax(180px,1fr) minmax(220px,1.35fr);gap:12px;align-items:end;margin-top:12px}
+.mt5-buttons{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.mt5-account-strip{display:flex;gap:9px 22px;align-items:center;flex-wrap:wrap;margin:13px 0;padding:12px;border:1px solid var(--line);border-radius:10px;background:rgba(5,15,27,.55);font-size:12px;color:var(--muted)}
+.mt5-account-strip b{color:var(--text);font-weight:700}
+.mt5-symbol-settings{margin:10px 0;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:rgba(5,15,27,.35)}
+.mt5-symbol-settings summary{cursor:pointer;font-weight:650;font-size:13px}.mt5-symbol-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.mt5-live-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:12px}
+.mt5-live-tile{display:flex;flex-direction:column;gap:5px;min-height:75px;padding:12px;border:1px solid var(--line);border-radius:10px;background:rgba(5,15,27,.58)}
+.mt5-live-tile b{font-size:19px;letter-spacing:.2px}.mt5-live-tile small{font-size:11px;color:var(--muted)}
+.mt5-mini-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px}.mt5-errors{margin-top:8px;color:var(--amber)}
+.mt5-positions-wrap{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.mt5-pos-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:9px}
+.mt5-pos{padding:10px;border:1px solid var(--line);border-radius:8px;background:rgba(5,15,27,.4)}
+.mt5-offline{color:var(--muted)}
+@media(max-width:800px){.mt5-connect-grid{grid-template-columns:1fr}.mt5-symbol-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mt5-live-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mt5-pos-list{grid-template-columns:1fr}}
+@media(max-width:480px){.mt5-symbol-grid{grid-template-columns:1fr}.mt5-live-tile b{font-size:16px}}
 </style>
 </head>
 <body><div class="wrap">
 <header class="top"><div class="brand"><div class="logo">TPC</div><div><div class="eyebrow">Pit wall · Trading performance system</div><h1>Trading Performance Cockpit</h1><div class="small">ASSIST MODE · SIGNALS: TRADINGVIEW + COCKPIT · RISK REF 0,50%</div></div></div><div class="top-actions"><span class="status"><i class="lamp" id="globalLamp"></i><span id="globalState">CHECKS EN ATTENTE</span></span><button class="btn" id="exportBtn">Exporter sauvegarde complète</button><button class="btn" onclick="window.print()">Imprimer</button><button class="btn primary" id="saveBtn">Enregistrer session</button></div></header>
-<section class="hero"><div class="card hero-main"><div class="eyebrow">Session control</div><h2 style="font-size:25px;margin:6px 0">Préparer. Confirmer. Exécuter.</h2><p>Un cockpit d'aide à la décision pour le Gold et les marchés associés. Les cotations et graphiques TradingView sont intégrés ; le moteur du cockpit vérifie les conditions renseignées. Aucune connexion broker ni aucun ordre automatique. Le moteur OHLC fonctionne sur fichiers CSV importés, pas sur un flux live lisible par la page.</p><div class="two" style="margin-top:14px"><div class="field"><label>Compte de travail</label><select id="account"><option value="ftmo">FTMO · manuel</option><option value="vantage">Vantage · manuel</option></select></div><div class="field"><label>Session</label><select id="session"><option>London</option><option>New York AM</option><option>New York PM</option><option>Asia</option><option>Autre</option></select></div></div><div class="row"><span class="pill">ASSISTED AUTHORITY</span><span class="pill green">TRADINGVIEW EMBEDDED</span><span class="pill amber">NO BROKER BRIDGE</span></div></div><div class="kpis"><div class="metric"><span>État cockpit</span><b id="stateKpi">WAIT</b><em>Feux de session</em></div><div class="metric"><span>Biais XAUUSD</span><b id="biasKpi">NEUTRE</b><em id="biasSub">À renseigner</em></div><div class="metric"><span>Risque / trade</span><b id="riskKpi">0,50%</b><em>Plafond de référence</em></div><div class="metric"><span>Budget risque</span><b id="budgetKpi">—</b><em>Après risque ouvert</em></div></div></section>
+<section class="hero"><div class="card hero-main"><div class="eyebrow">Session control</div><h2 style="font-size:25px;margin:6px 0">Préparer. Confirmer. Exécuter.</h2><p>Un cockpit d’aide à la décision pour le Gold et les marchés associés. TradingView reste intégré pour les graphiques ; un pont MT5 local facultatif alimente les ticks, bougies et métriques du compte. Connexion strictement en lecture seule : aucun ordre n’est envoyé.</p><div class="two" style="margin-top:14px"><div class="field"><label>Compte de travail</label><select id="account"><option value="ftmo">FTMO · manuel</option><option value="vantage">Vantage · manuel</option></select></div><div class="field"><label>Session</label><select id="session"><option>London</option><option>New York AM</option><option>New York PM</option><option>Asia</option><option>Autre</option></select></div></div><div class="row"><span class="pill">ASSISTED AUTHORITY</span><span class="pill green">TRADINGVIEW EMBEDDED</span><span class="pill amber">NO BROKER BRIDGE</span></div></div><div class="kpis"><div class="metric"><span>État cockpit</span><b id="stateKpi">WAIT</b><em>Feux de session</em></div><div class="metric"><span>Biais XAUUSD</span><b id="biasKpi">NEUTRE</b><em id="biasSub">À renseigner</em></div><div class="metric"><span>Risque / trade</span><b id="riskKpi">0,50%</b><em>Plafond de référence</em></div><div class="metric"><span>Budget risque</span><b id="budgetKpi">—</b><em>Après risque ouvert</em></div></div></section>
 <nav class="tabs"><button class="tab active" data-tab="cockpit">01 · Cockpit</button><button class="tab" data-tab="intel">02 · Market Intelligence</button><button class="tab" data-tab="radar">03 · Market radar</button><button class="tab" data-tab="execution">04 · Exécution & risque</button><button class="tab" data-tab="journal">05 · Performance</button></nav>
 <main>
 <section id="panel-cockpit" class="panel"><div class="grid">
+<div class="card s12 mt5-live-card" id="mt5LiveCard">
+  <div class="row mt5-heading" style="justify-content:space-between;align-items:center">
+    <div><div class="eyebrow">Live data · Terminal local</div><h2 style="margin:3px 0">MT5 Live Feed</h2><p class="small" style="margin:4px 0">Bougies, ticks, equity, marge, positions et spécifications du symbole depuis le terminal MT5 actuellement connecté.</p></div>
+    <span id="mt5State" class="pill amber">PONT NON CONNECTÉ</span>
+  </div>
+  <div class="notice mt5-readonly-note"><b>Lecture seule.</b> Le pont ne peut ni ouvrir, ni modifier, ni fermer un ordre. Garde MT5 ouvert et connecté sur le PC où tu utilises ce cockpit. Les identifiants de trading restent dans MT5 ; seul le pont local reçoit une clé API locale.</div>
+  <div class="mt5-connect-grid">
+    <div class="field"><label for="mt5BaseUrl">Adresse du pont sur ce PC</label><input id="mt5BaseUrl" type="url" value="http://127.0.0.1:8765" spellcheck="false"></div>
+    <div class="field"><label for="mt5ApiKey">Clé API locale (affichée par le pont)</label><input id="mt5ApiKey" type="password" placeholder="Colle la clé affichée dans la fenêtre MT5 Bridge" autocomplete="off"></div>
+    <div class="mt5-buttons"><button class="btn primary" id="mt5ConnectBtn">Connecter MT5</button><button class="btn" id="mt5DisconnectBtn" disabled>Déconnecter</button><a class="btn" href="https://raw.githubusercontent.com/rocalle58-create/session-desk/main/install_mt5_bridge.bat" target="_blank" rel="noopener">Télécharger l’installateur Windows ↗</a></div>
+  </div>
+  <div class="mt5-account-strip" id="mt5AccountStrip"><span>Compte : <b id="mt5AccountName">—</b></span><span>Serveur : <b id="mt5ServerName">—</b></span><span>Équité : <b id="mt5EquityLive">—</b></span><span>Marge libre : <b id="mt5MarginLive">—</b></span><span>Positions : <b id="mt5PositionsCount">—</b></span></div>
+  <details class="mt5-symbol-settings"><summary>Correspondance des symboles MT5 (adapter aux noms de Market Watch)</summary>
+    <div class="mt5-symbol-grid">
+      <div class="field"><label for="mt5SymGold">Gold (obligatoire)</label><input id="mt5SymGold" value="XAUUSD" spellcheck="false"></div>
+      <div class="field"><label for="mt5SymDxy">DXY (facultatif)</label><input id="mt5SymDxy" value="DXY" spellcheck="false"></div>
+      <div class="field"><label for="mt5SymSilver">Silver</label><input id="mt5SymSilver" value="XAGUSD" spellcheck="false"></div>
+      <div class="field"><label for="mt5SymEur">EURUSD</label><input id="mt5SymEur" value="EURUSD" spellcheck="false"></div>
+      <div class="field"><label for="mt5SymGbp">GBPUSD</label><input id="mt5SymGbp" value="GBPUSD" spellcheck="false"></div>
+      <div class="field"><label for="mt5SymJpy">USDJPY</label><input id="mt5SymJpy" value="USDJPY" spellcheck="false"></div>
+    </div>
+    <p class="small">Les suffixes diffèrent selon le broker : GOLD, XAUUSD.a, XAUUSDm, etc. Renseigne le symbole exact affiché dans MT5. Les champs vides sont ignorés.</p>
+  </details>
+  <div class="mt5-live-grid">
+    <div class="mt5-live-tile"><span class="small">Gold · Bid</span><b id="mt5GoldBid">—</b><small id="mt5GoldBidTime">En attente de cotation</small></div>
+    <div class="mt5-live-tile"><span class="small">Gold · Ask</span><b id="mt5GoldAsk">—</b><small id="mt5GoldSpread">Spread : —</small></div>
+    <div class="mt5-live-tile"><span class="small">Spécifications du symbole</span><b id="mt5GoldSpec">—</b><small id="mt5GoldVolume">Pas de lot : —</small></div>
+    <div class="mt5-live-tile"><span class="small">Flux OHLC</span><b id="mt5BarsState">EN ATTENTE</b><small id="mt5BarsTime">Pas de bougie MT5 reçue</small></div>
+  </div>
+  <div class="mt5-mini-row"><button class="btn" id="mt5UseQuoteBtn" disabled>Mettre le Bid/Ask en prix d’entrée</button><span class="small" id="mt5LastUpdate">Aucune connexion locale active.</span></div>
+  <div id="mt5MarketErrors" class="small mt5-errors"></div>
+  <div class="mt5-positions-wrap"><div class="row" style="justify-content:space-between"><h3 style="margin:0">Positions ouvertes du terminal</h3><span class="small">Lecture seule</span></div><div id="mt5PositionsList" class="small">Connecte MT5 pour afficher les positions.</div></div>
+</div>
+
 <div class="card s8"><div class="row" style="justify-content:space-between"><h2>Feux de départ</h2><span id="readinessTag" class="pill amber">CHECKS INCOMPLETS</span></div><div id="decisionBox" class="decision wait"><div><div class="small">AUTORISATION COCKPIT</div><strong id="decisionText">WAIT · PAS ENCORE PRÊT</strong><div class="small" id="decisionReason">Complète les contrôles et confirme le scénario.</div></div><i class="lamp amber" id="decisionLamp"></i></div><div class="scoreline row" style="justify-content:space-between;margin:12px 0 6px"><span class="small">Préparation</span><b id="checkCount">0 / 8</b></div><div class="progress"><i id="checkProgress"></i></div><div class="checks" id="preflight" style="margin-top:12px">
 <label class="check"><input type="checkbox" data-flight="data"><span><b>Données marché vérifiées</b><small>Symbole, session, flux TradingView disponible.</small></span></label>
 <label class="check"><input type="checkbox" data-flight="calendar"><span><b>Calendrier contrôlé</b><small>Événements à fort impact identifiés.</small></span></label>
@@ -38,7 +91,7 @@
 <section id="panel-intel" class="panel hidden"><div class="grid">
 <div class="card s8"><div class="row" style="justify-content:space-between"><div><h2>Macro desk · calendrier économique</h2><p class="small">Événements économiques TradingView · devise, importance et horaire à contrôler en heure de Paris.</p></div><a href="https://www.tradingview.com/economic-calendar/" target="_blank" rel="noopener">Ouvrir le calendrier ↗</a></div><div id="economicCalendar" class="calendar-widget"></div><p class="small" style="margin-top:8px">Le calendrier est un widget externe. Vérifie les annonces, chiffres et horaires sur la source officielle avant la session.</p></div>
 <div class="card s4"><h2>Macro factors · synthèse qualitative Gold</h2><div class="field"><label>DXY direction (manuel si historique absent)</label><select id="macroDxy"><option value="">Non renseigné</option><option value="down">DXY baisse · USD faible</option><option value="flat">Neutre / range</option><option value="up">DXY hausse · USD fort</option></select></div><div class="field"><label>US 10Y nominal</label><select id="macroYield"><option value="">Non renseigné</option><option value="down">Rendement en baisse</option><option value="flat">Stable</option><option value="up">Rendement en hausse</option></select></div><div class="field"><label>US real yields</label><select id="macroReal"><option value="">Non renseigné</option><option value="down">Taux réel en baisse</option><option value="flat">Stable</option><option value="up">Taux réel en hausse</option></select></div><div class="field"><label>Biais Fed</label><select id="macroFed"><option value="">Non renseigné</option><option value="dovish">Dovish</option><option value="neutral">Neutre</option><option value="hawkish">Hawkish</option></select></div><div class="field"><label>Régime risk</label><select id="macroRisk"><option value="">Non renseigné</option><option value="off">Risk-off</option><option value="neutral">Neutre</option><option value="on">Risk-on</option></select></div><div class="field"><label>Positionnement COMEX / COT (lecture manuelle)</label><select id="macroCot"><option value="">Non renseigné</option><option value="bull">Positionnement haussier</option><option value="neutral">Neutre</option><option value="bear">Positionnement baissier</option></select></div><div class="field"><label>Notes macro / catalyseurs</label><textarea id="macroIntelNotes" placeholder="CPI, NFP, FOMC, achats banques centrales, géopolitique, flux COMEX…"></textarea></div><div class="notice" id="macroRead">Renseigne au moins trois facteurs pour afficher la synthèse macro.</div><p class="small">Le calendrier TradingView est affiché en widget. Les rendements, la Fed, le risk regime et le COT sont à renseigner manuellement : aucune valeur fondamentale non sourcée n’est inventée.</p><p class="small" id="macroDxyAuto">DXY auto : historique non importé.</p></div>
-<div class="card s12"><div class="row" style="justify-content:space-between"><div><h2>Auto market structure · multi-timeframe</h2><p class="small">Importe les bougies OHLC exportées depuis TradingView. Le moteur calcule les biais, structures swing, EMA 20/50 et volatilité sur les dernières bougies clôturées.</p></div><span id="marketDataStatus" class="pill amber">Aucun CSV importé</span><span id="heroIntelStatus" class="small">Calcul en attente</span></div><div class="upload-grid"><div class="field"><label>Symbole</label><select id="ohlcSymbol"><option>XAUUSD</option><option>DXY</option><option>XAGUSD</option><option>EURUSD</option><option>GBPUSD</option><option>USDJPY</option><option>BTCUSD</option><option>NASDAQ</option><option>SP500</option></select></div><div class="field"><label>Timeframe</label><select id="ohlcTF"><option>M1</option><option>M5</option><option>M15</option><option>M30</option><option>H1</option><option>H4</option><option>D1</option><option>W1</option></select></div><div class="field"><label>Export OHLC (.csv)</label><input type="file" id="ohlcFile" accept=".csv,text/csv"></div><div class="field" style="justify-content:end"><button class="btn primary" id="importOHLC">Importer & analyser</button></div></div><div class="row" style="justify-content:space-between;margin-top:8px"><span class="small" id="ohlcFeedback">TradingView Supercharts : menu supérieur → Exporter les données du graphique → CSV (fonctionnalité selon abonnement, disponible sur les offres Plus et supérieures selon la grille actuelle). Importe Gold, DXY et comparatifs sur le même timeframe.</span><button class="btn" id="clearOHLC">Effacer tous les historiques</button></div><div class="small" style="margin:8px 0 12px">Les données importées sont conservées localement dans ton navigateur. Le moteur recalcule automatiquement toutes les 30 secondes sur ces historiques, mais ne reçoit pas de nouvelles cotations en direct. Réimporte un CSV actualisé pour rafraîchir les données. Le widget TradingView ne transmet pas ses chandeliers au moteur du cockpit.</div><div class="tf-grid" id="biasGrid"></div><div class="row" style="justify-content:space-between;margin-top:10px"><b id="compositeBias">Biais composite : en attente</b><span class="small" id="biasCoverage">0 / 8 timeframes</span></div><div class="small" style="margin:12px 0 7px">DXY · biais automatique multi-timeframe</div><div class="tf-grid" id="dxyBiasGrid"></div></div>
+<div class="card s12"><div class="row" style="justify-content:space-between"><div><h2>Auto market structure · multi-timeframe</h2><p class="small">Importe les bougies OHLC exportées depuis TradingView. Le moteur calcule les biais, structures swing, EMA 20/50 et volatilité sur les dernières bougies clôturées.</p></div><span id="marketDataStatus" class="pill amber">Aucun CSV importé</span><span id="heroIntelStatus" class="small">Calcul en attente</span></div><div class="upload-grid"><div class="field"><label>Symbole</label><select id="ohlcSymbol"><option>XAUUSD</option><option>DXY</option><option>XAGUSD</option><option>EURUSD</option><option>GBPUSD</option><option>USDJPY</option><option>BTCUSD</option><option>NASDAQ</option><option>SP500</option></select></div><div class="field"><label>Timeframe</label><select id="ohlcTF"><option>M1</option><option>M5</option><option>M15</option><option>M30</option><option>H1</option><option>H4</option><option>D1</option><option>W1</option></select></div><div class="field"><label>Export OHLC (.csv)</label><input type="file" id="ohlcFile" accept=".csv,text/csv"></div><div class="field" style="justify-content:end"><button class="btn primary" id="importOHLC">Importer & analyser</button></div></div><div class="row" style="justify-content:space-between;margin-top:8px"><span class="small" id="ohlcFeedback">Source prioritaire : MT5 Live Feed (bougies mises à jour automatiquement si le pont local est connecté). Sinon, TradingView Supercharts → Exporter les données du graphique → CSV puis importer ici. Importe Gold, DXY et comparatifs. sur le même timeframe.</span><button class="btn" id="clearOHLC">Effacer tous les historiques</button></div><div class="small" style="margin:8px 0 12px">Les données importées sont conservées localement dans ton navigateur. Le moteur recalcule automatiquement toutes les 30 secondes sur ces historiques, mais ne reçoit pas de nouvelles cotations en direct. Réimporte un CSV actualisé pour rafraîchir les données. Le widget TradingView ne transmet pas ses chandeliers au moteur du cockpit.</div><div class="tf-grid" id="biasGrid"></div><div class="row" style="justify-content:space-between;margin-top:10px"><b id="compositeBias">Biais composite : en attente</b><span class="small" id="biasCoverage">0 / 8 timeframes</span></div><div class="small" style="margin:12px 0 7px">DXY · biais automatique multi-timeframe</div><div class="tf-grid" id="dxyBiasGrid"></div></div>
 <div class="card s6"><h2>DXY correlation · XAUUSD</h2><div class="two"><div class="intel-tile"><span class="small">Pearson rolling</span><div class="value" id="dxyCorr">—</div><div class="hint" id="dxyCorrStrength">Importe XAUUSD et DXY</div></div><div class="intel-tile"><span class="small">Échantillon</span><div class="value" id="dxyCorrN">0</div><div class="hint">Rendements alignés</div></div></div><div class="field" style="margin-top:10px"><label>Timeframe corrélation</label><select id="corrTF"><option>M15</option><option>H1</option><option>H4</option><option>D1</option></select></div><div class="notice" id="corrNote">La corrélation mesure une relation historique ; elle n'implique pas une causalité et n'est pas stable.</div><div style="overflow:auto;margin-top:10px"><table class="table"><thead><tr><th>Actif</th><th>Corrélation au DXY</th><th>Lecture</th></tr></thead><tbody id="corrTable"><tr><td colspan="3">Importe les historiques nécessaires.</td></tr></tbody></table></div></div>
 <div class="card s6"><h2>Volatility monitor · ATR</h2><div class="two"><div class="intel-tile"><span class="small">ATR 14 · H1 Gold</span><div class="value" id="atrH1">—</div><div class="hint" id="atrPctH1">En attente de données</div></div><div class="intel-tile"><span class="small">Régime</span><div class="value" id="atrRegime">—</div><div class="hint" id="atrCompare">ATR / moyenne récente</div></div></div><p class="small" id="atrExplain" style="margin-top:10px">L'ATR mesure l'amplitude, pas le sens du marché. Réévalue la distance de stop et le risque lorsque le régime change.</p><div class="small" style="margin:8px 0">Volatilité multi-timeframe · ATR(14) / moyenne récente</div><div class="tf-grid" id="volTFGrid"></div></div>
 <div class="card s12"><h2>SMT detector · intermarket divergence</h2><div class="three"><div class="field"><label>Marché comparatif</label><select id="smtPairAuto"><option value="DXY">DXY · corrélation inverse</option><option value="XAGUSD">Silver · généralement positive</option><option value="EURUSD">EURUSD · souvent positive</option><option value="GBPUSD">GBPUSD · souvent positive</option></select></div><div class="field"><label>Timeframe SMT</label><select id="smtTFAuto"><option>M5</option><option>M15</option><option>H1</option><option>H4</option><option>D1</option></select></div><div class="field"><label>Type de relation</label><select id="smtRelationAuto"><option value="auto">Automatique</option><option value="inverse">Inverse</option><option value="positive">Positive</option></select></div></div><div id="smtAutoResult" class="decision wait"><div><strong>En attente des historiques</strong><div class="small">Importe XAUUSD et l'actif comparatif sur la même unité.</div></div><i class="lamp amber"></i></div><p class="small" style="margin-top:8px">Le SMT compare deux séries et leurs pivots récents. Il ne constitue jamais un déclencheur autonome.</p></div>
@@ -116,4 +169,131 @@ $('importOHLC').onclick=updateMarket;$('clearOHLC').onclick=()=>{if(confirm('Eff
 try{const saved=JSON.parse(localStorage.getItem(MAC_KEY)||'{}');Object.entries(saved).forEach(([k,v])=>{if($(k))$(k).value=v})}catch{}
 function initMarketIntel(){renderMarketIntel();const timer=setInterval(()=>{if(!$('panel-intel').classList.contains('hidden'))renderMarketIntel()},30000)}
 initMarketIntel();
+
+// MT5 read-only local feed. The bridge has no trade/order route.
+const mt5TFList=['M1','M5','M15','M30','H1','H4','D1','W1'];
+const mt5MapFields={XAUUSD:'mt5SymGold',DXY:'mt5SymDxy',XAGUSD:'mt5SymSilver',EURUSD:'mt5SymEur',GBPUSD:'mt5SymGbp',USDJPY:'mt5SymJpy'};
+let mt5Live=false,mt5Timer=null,mt5Polling=false,mt5LastPack=0,mt5LastQuote=null,mt5StatusCache=null;
+const mt5KeyName='tpcMt5ApiKeySession',mt5BaseName='tpcMt5BaseUrl';
+const mt5Base=()=>($('mt5BaseUrl').value.trim().replace(/\/$/,'')||'http://127.0.0.1:8765');
+const mt5Key=()=>sessionStorage.getItem(mt5KeyName)||$('mt5ApiKey').value.trim();
+function mt5Profile(){return $('account').value==='vantage'?'Vantage':'FTMO'}
+function mt5Map(){const out={};Object.entries(mt5MapFields).forEach(([logical,id])=>{const val=$(id).value.trim();if(val)out[logical]=val});return out}
+function mt5Header(){return {'X-API-Key':mt5Key(),'Accept':'application/json'}}
+function mt5State(text,tone='amber'){$('mt5State').textContent=text;$('mt5State').className='pill '+tone}
+function mt5Money(n,currency){return Number(n).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' '+(currency||'')}
+async function mt5Request(path,options={}){
+  const response=await fetch(mt5Base()+path,{...options,cache:'no-store',headers:{...mt5Header(),...(options.headers||{})}});
+  let data={};try{data=await response.json()}catch{}
+  if(!response.ok)throw new Error(data.error||('Erreur du pont MT5 ('+response.status+')'));
+  return data;
+}
+function mt5ShowAccount(data){
+  if(!data)return;mt5StatusCache=data;
+  const a=data.account||data;
+  $('mt5AccountName').textContent=(a.profile||mt5Profile())+' · '+(a.login_masked||'compte connecté');
+  $('mt5ServerName').textContent=a.server||'—';
+  $('mt5EquityLive').textContent=mt5Money(a.equity,a.currency);
+  $('mt5MarginLive').textContent=mt5Money(a.margin_free,a.currency);
+  $('mt5PositionsCount').textContent=String(data.positions_count??(data.positions||[]).length??0);
+  if(Number.isFinite(Number(a.equity))&&Number(a.equity)>0)$('equity').value=Number(a.equity).toFixed(2);
+  if(a.currency){const sel=$('currency');if(![...sel.options].some(o=>o.value===a.currency)){const opt=document.createElement('option');opt.value=a.currency;opt.textContent=a.currency;sel.appendChild(opt)}sel.value=a.currency}
+  if(Number.isFinite(Number(data.daily_realized_pnl_utc))) $('dailyPnl').value=Number(data.daily_realized_pnl_utc).toFixed(2);
+  if(data.open_risk_cash===null){const guardBudget=Math.max(0,Number($('equity').value||0)*Math.min(.5,Number($('riskPct').value||.5))/100);$('openRisk').value=guardBudget.toFixed(2);$('openRisk').title='Risque ouvert non calculable : une position peut ne pas avoir de SL. Le budget disponible est volontairement bloqué.'}
+  else if(Number.isFinite(Number(data.open_risk_cash))) $('openRisk').value=Number(data.open_risk_cash).toFixed(2);
+  refreshRisk();
+  mt5RenderPositions(data.positions||[]);
+}
+function mt5RenderPositions(rows){
+  const host=$('mt5PositionsList');
+  if(!rows.length){host.innerHTML='<span class="small">Aucune position ouverte sur le compte connecté.</span>';return}
+  host.innerHTML='<div class="mt5-pos-list">'+rows.map(p=>{
+    const c=Number(p.profit||0)+Number(p.swap||0),tone=c>0?'good-text':c<0?'bad-text':'neutral-text';
+    const risk=p.risk_to_sl===null?'Risque inconnu · vérifier le SL':('Risque au SL : '+fmt(p.risk_to_sl,2));
+    return `<div class="mt5-pos"><div class="row" style="justify-content:space-between"><b>${p.symbol} · ${p.side}</b><b class="${tone}">${fmt(c,2)}</b></div><div class="small">${fmt(p.volume,3)} lot · entrée ${p.open} · SL ${p.sl||'ABSENT'} · TP ${p.tp||'—'}</div><div class="small">${risk}</div></div>`
+  }).join('')+'</div>';
+}
+function mt5UpdateQuote(quote){
+  if(!quote)return;mt5LastQuote=quote;
+  const digits=Number(quote.meta?.digits??2);
+  $('mt5GoldBid').textContent=Number(quote.bid).toFixed(digits);
+  $('mt5GoldAsk').textContent=Number(quote.ask).toFixed(digits);
+  $('mt5GoldBidTime').textContent='Tick reçu · '+new Date(Number(quote.time_msc||quote.time*1000)).toLocaleTimeString('fr-FR');
+  $('mt5GoldSpread').textContent='Spread : '+fmt(quote.meta?.spread_points??0,1)+' points · âge '+fmt(quote.age_seconds??0,1)+' s'+(quote.stale?' · PÉRIMÉ':'');
+  $('mt5GoldSpec').textContent='Tick '+(quote.meta?.trade_tick_size??'—')+' · valeur '+(quote.meta?.trade_tick_value_loss??quote.meta?.trade_tick_value??'—');
+  $('mt5GoldVolume').textContent='Volume min '+(quote.meta?.volume_min??'—')+' · pas '+(quote.meta?.volume_step??'—');
+  $('mt5BarsState').textContent=quote.stale?'TICK PÉRIMÉ':'FLUX ACTIF';
+  $('mt5BarsState').className=quote.stale?'bad-text':'good-text';
+  $('mt5BarsTime').textContent='Dernier tick '+new Date(Number(quote.time_msc||quote.time*1000)).toLocaleString('fr-FR');
+  $('mt5UseQuoteBtn').disabled=!!quote.stale;
+  if(quote.meta){
+    const tickSize=Number(quote.meta.trade_tick_size||quote.meta.point||0),tickValue=Number(quote.meta.trade_tick_value_loss||quote.meta.trade_tick_value||0),step=Number(quote.meta.volume_step||0);
+    if(tickSize>0)$('tickSize').value=tickSize;
+    if(tickValue>0)$('tickValue').value=tickValue;
+    if(step>0)$('lotStep').value=step;
+  }
+}
+function mt5ImportPack(pack,mapping){
+  const errors=[];let imported=0;const markets=pack.markets||{};
+  for(const [logical,real] of Object.entries(mapping)){
+    const market=markets[real];if(!market){if(pack.errors?.[real])errors.push(real+': '+pack.errors[real]);continue}
+    if(logical==='XAUUSD'&&market.quote)mt5UpdateQuote(market.quote);
+    for(const tf of mt5TFList){
+      const rows=market.rates?.[tf];if(!Array.isArray(rows)||!rows.length)continue;
+      mkt[logical+'_'+tf]=rows.map(r=>({t:Number(r.time),o:Number(r.open),h:Number(r.high),l:Number(r.low),c:Number(r.close),v:Number(r.tick_volume||0)})).slice(-350);
+      imported++;
+    }
+  }
+  if(imported){saveMarket();renderMarketIntel()}
+  $('mt5BarsState').textContent=imported?'LIVE · '+imported+' séries':'AUCUNE BOUGIE';
+  $('mt5BarsTime').textContent='Mise à jour '+new Date().toLocaleTimeString('fr-FR')+' · '+imported+' séries OHLC';
+  $('mt5LastUpdate').textContent='Dernière synchronisation '+new Date().toLocaleTimeString('fr-FR')+' · historique broker en lecture seule';
+  $('mt5MarketErrors').textContent=errors.slice(0,5).join(' | ');
+}
+async function mt5PollMarkets(){
+  if(!mt5Live||mt5Polling)return;mt5Polling=true;
+  try{
+    const mapping=mt5Map(),symbols=[...new Set(Object.values(mapping))];
+    if(!mapping.XAUUSD)throw new Error('Renseigne le symbole Gold MT5.');
+    const q=new URLSearchParams({symbols:symbols.join(','),timeframes:mt5TFList.join(','),count:'180'});
+    const pack=await mt5Request('/api/market-pack?'+q.toString());
+    if(!pack.connected)throw new Error('Le terminal MT5 est déconnecté.');
+    mt5ShowAccount(pack);
+    mt5ImportPack(pack,mapping);
+    const gold=pack.markets?.[mapping.XAUUSD]?.quote;
+    if(gold&&gold.stale){mt5State('TICK PÉRIMÉ · ATTENTION','amber')}
+    else mt5State('MT5 CONNECTÉ · '+mt5Profile(),'green');
+  }catch(e){mt5State('ERREUR FLUX MT5','red');$('mt5LastUpdate').textContent=e.message}
+  finally{mt5Polling=false}
+}
+async function mt5Connect(){
+  const key=$('mt5ApiKey').value.trim()||sessionStorage.getItem(mt5KeyName)||'';
+  if(!key){mt5State('CLÉ LOCALE REQUISE','amber');$('mt5LastUpdate').textContent='Colle la clé affichée dans la fenêtre du pont local.';return}
+  sessionStorage.setItem(mt5KeyName,key);sessionStorage.setItem(mt5BaseName,mt5Base());
+  $('mt5ConnectBtn').disabled=true;mt5State('CONNEXION AU TERMINAL…','amber');
+  try{
+    const health=await fetch(mt5Base()+'/health',{cache:'no-store'});if(!health.ok)throw new Error('Pont local inaccessible. Lance start_mt5_bridge.bat sur le PC où MT5 est installé.');
+    await mt5Request('/api/connect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profile:mt5Profile()})});
+    mt5Live=true;$('mt5DisconnectBtn').disabled=false;
+    await mt5PollMarkets();
+    if(mt5Timer)clearInterval(mt5Timer);
+    mt5Timer=setInterval(mt5PollMarkets,8000);
+    mt5State('MT5 CONNECTÉ · '+mt5Profile(),'green');
+    $('mt5LastUpdate').textContent='Flux actif · actualisation OHLC toutes les 8 secondes. Garde cette page et MT5 ouverts.';
+  }catch(e){mt5Live=false;mt5State('CONNEXION IMPOSSIBLE','red');$('mt5LastUpdate').textContent=e.message+' Vérifie MT5, la clé locale et l’autorisation réseau local du navigateur.'}
+  finally{$('mt5ConnectBtn').disabled=false}
+}
+async function mt5Disconnect(){
+  mt5Live=false;if(mt5Timer){clearInterval(mt5Timer);mt5Timer=null}
+  try{if(mt5Key())await mt5Request('/api/disconnect',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})}catch{}
+  $('mt5DisconnectBtn').disabled=true;mt5State('PONT DÉCONNECTÉ','amber');$('mt5LastUpdate').textContent='La synchronisation MT5 est arrêtée. Les historiques déjà importés restent conservés dans ce navigateur.';
+}
+$('mt5ConnectBtn').addEventListener('click',mt5Connect);
+$('mt5DisconnectBtn').addEventListener('click',mt5Disconnect);
+$('mt5UseQuoteBtn').addEventListener('click',()=>{if(!mt5LastQuote)return;const buy=$('signalDirection').value==='long';$('entry').value=(buy?mt5LastQuote.ask:mt5LastQuote.bid).toFixed(Number(mt5LastQuote.meta?.digits??2));calcTicket();refreshRisk()});
+$('mt5BaseUrl').value=sessionStorage.getItem(mt5BaseName)||'http://127.0.0.1:8765';
+$('mt5ApiKey').value=sessionStorage.getItem(mt5KeyName)||'';
+$('account').addEventListener('change',()=>{if(mt5Live){mt5Disconnect().then(()=>{mt5State('PROFIL MODIFIÉ · RECONNECTE','amber')})}});
+Object.values(mt5MapFields).forEach(id=>$(id).addEventListener('change',()=>{if(mt5Live)mt5PollMarkets()}));
+
 </script></body></html>
