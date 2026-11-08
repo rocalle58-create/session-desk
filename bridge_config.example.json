@@ -1,0 +1,8 @@
+{
+  "api_key": "",
+  "profile": "FTMO",
+  "terminals": {
+    "FTMO": { "path": "", "server_hint": "" },
+    "Vantage": { "path": "", "server_hint": "" }
+  }
+}
