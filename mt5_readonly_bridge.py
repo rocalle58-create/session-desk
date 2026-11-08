@@ -218,8 +218,10 @@ def history_deals(days=90, symbol_filter=""):
             "fee": float(getattr(d,"fee",0) or 0),
             "comment": str(getattr(d,"comment","") or "")
         })
+    open_rows=lib.positions_get() or []
+    open_ids=[int(getattr(p,"identifier",getattr(p,"ticket",0)) or 0) for p in open_rows]
     return {"days":int(days),"from":start.isoformat(),"to":now.isoformat(),
-            "count":len(rows),"deals":rows,"read_only":True}
+            "count":len(rows),"deals":rows,"open_position_ids":open_ids,"read_only":True}
 
 def daily_pnl():
     lib=api(); now=datetime.now(timezone.utc); start=now.replace(hour=0,minute=0,second=0,microsecond=0)
