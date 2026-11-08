@@ -23,6 +23,27 @@ jobs:
         uses: actions/configure-pages@v5
         with:
           enablement: true
+      - name: Validate dashboard and read-only MT5 bridge
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          html = Path("index.html").read_text(encoding="utf-8")
+          match = re.search(r"<script>([\\s\\S]*?)</script>", html)
+          if not match:
+              raise SystemExit("Inline dashboard script not found")
+          Path("/tmp/tpc-inline.js").write_text(match.group(1), encoding="utf-8")
+          ids = re.findall(r'\\bid="([^"]+)"', html)
+          duplicates = sorted({x for x in ids if ids.count(x) > 1})
+          if duplicates:
+              raise SystemExit("Duplicate HTML ids: " + ", ".join(duplicates))
+          PY
+          node --check /tmp/tpc-inline.js
+          python -m py_compile mt5_readonly_bridge.py
+          if grep -nE 'order_send[[:space:]]*\\(' mt5_readonly_bridge.py; then
+            echo "Unexpected order placement call in read-only bridge"
+            exit 1
+          fi
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
