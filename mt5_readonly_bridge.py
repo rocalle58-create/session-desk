@@ -2,7 +2,8 @@
 Binds only to loopback; intentionally has no order placement/modification route.
 """
 from __future__ import annotations
-import json, secrets, threading, time
+import json, secrets, threading, time, csv, io, urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -11,7 +12,7 @@ from urllib.parse import parse_qs, urlparse
 ROOT = Path(__file__).resolve().parent
 CFG = ROOT / "bridge_config.local.json"
 EXAMPLE = ROOT / "bridge_config.example.json"
-HOST, PORT, VERSION = "127.0.0.1", 8765, "2.0-readonly"
+HOST, PORT, VERSION = "127.0.0.1", 8765, "2.1-readonly-macro"
 ORIGINS = {"https://rocalle58-create.github.io", "http://127.0.0.1:8000", "http://localhost:8000", "http://127.0.0.1:5500", "http://localhost:5500"}
 LOCK = threading.RLock()
 mt5 = None
@@ -31,6 +32,86 @@ def config_load():
     return data
 
 CONFIG = config_load()
+
+
+# Public macro observations downloaded from FRED graph CSV exports.
+# Values are publication-frequency data, not real-time market ticks.
+MACRO_SERIES = {
+    "DGS10": {"label": "US 10Y nominal yield", "kind": "rate", "threshold": 0.05, "lookback": 5},
+    "DFII10": {"label": "US 10Y real yield", "kind": "rate", "threshold": 0.05, "lookback": 5},
+    "DFF": {"label": "Effective federal funds rate", "kind": "rate", "threshold": 0.025, "lookback": 20},
+    "CPIAUCSL": {"label": "CPI, all items", "kind": "inflation"},
+    "PCEPILFE": {"label": "PCE price index excluding food and energy", "kind": "inflation"},
+}
+MACRO_CACHE = {"at": 0.0, "data": None}
+MACRO_CACHE_LOCK = threading.Lock()
+
+def _fetch_fred_series(series_id):
+    url = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=" + series_id
+    req = urllib.request.Request(url, headers={"User-Agent": "TradingPerformanceCockpit/2.1"})
+    with urllib.request.urlopen(req, timeout=12) as response:
+        raw = response.read().decode("utf-8-sig")
+    rows = list(csv.DictReader(io.StringIO(raw)))
+    points = []
+    for row in rows:
+        date = row.get("observation_date") or row.get("DATE") or row.get("date")
+        value = row.get(series_id)
+        if not date or value in (None, "", "."):
+            continue
+        try:
+            points.append({"date": date, "value": float(value)})
+        except (TypeError, ValueError):
+            continue
+    if not points:
+        raise RuntimeError("No valid observations returned for " + series_id)
+    meta = MACRO_SERIES[series_id]
+    latest = points[-1]
+    result = {"id": series_id, "label": meta["label"], "latest": latest["value"],
+              "latest_date": latest["date"], "trend": None, "delta": None,
+              "unit": "%" if meta["kind"] == "rate" else "index"}
+    if meta["kind"] == "rate":
+        back = meta["lookback"]
+        if len(points) > back:
+            delta = latest["value"] - points[-1-back]["value"]
+            result["delta"] = round(delta, 4)
+            result["trend"] = "up" if delta >= meta["threshold"] else "down" if delta <= -meta["threshold"] else "flat"
+    else:
+        if len(points) >= 14:
+            yoy = (latest["value"] / points[-13]["value"] - 1.0) * 100.0
+            prev_yoy = (points[-2]["value"] / points[-14]["value"] - 1.0) * 100.0
+            result["yoy_pct"] = round(yoy, 3)
+            result["yoy_change"] = round(yoy - prev_yoy, 3)
+    return result
+
+def fred_macro_data():
+    now = time.time()
+    with MACRO_CACHE_LOCK:
+        if MACRO_CACHE["data"] is not None and now - MACRO_CACHE["at"] < 900:
+            cached = dict(MACRO_CACHE["data"])
+            cached["cached"] = True
+            return cached
+        results, errors = {}, {}
+        with ThreadPoolExecutor(max_workers=5) as pool:
+            futures = {pool.submit(_fetch_fred_series, sid): sid for sid in MACRO_SERIES}
+            for future in as_completed(futures):
+                sid = futures[future]
+                try:
+                    results[sid] = future.result()
+                except Exception as exc:
+                    errors[sid] = str(exc)
+        if not results and MACRO_CACHE["data"] is not None:
+            stale = dict(MACRO_CACHE["data"])
+            stale["cached"] = True
+            stale["stale"] = True
+            stale["errors"] = errors
+            return stale
+        if not results:
+            raise RuntimeError("FRED data could not be reached: " + "; ".join(errors.values()))
+        payload = {"source": "FRED graph CSV", "updated_at": datetime.now(timezone.utc).isoformat(),
+                   "series": results, "series_count": len(results), "errors": errors,
+                   "cached": False, "stale": False}
+        MACRO_CACHE["at"], MACRO_CACHE["data"] = now, payload
+        return payload
 
 def api():
     global mt5
@@ -143,6 +224,7 @@ class Handler(BaseHTTPRequestHandler):
         if p.path=="/health": self.out(200,{"ok":True,"service":"TPC MT5 read-only","version":VERSION}); return
         if not self.auth(): return
         try:
+            if p.path=="/api/macro": self.out(200,fred_macro_data()); return
             with LOCK:
                 if p.path=="/api/status":
                     lib,t,a=connected(); pos,risk=positions_data(); pnl=daily_pnl(); floating=sum(x["profit"]+x["swap"] for x in pos)
