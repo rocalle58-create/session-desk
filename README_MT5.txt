@@ -1,4 +1,4 @@
-TRADING PERFORMANCE COCKPIT — CONNEXION MT5 EN LECTURE SEULE
+TRADING PERFORMANCE COCKPIT — CONNEXION MT5 EN LECTURE SEULE — VERSION COMMAND CENTER
 
 PRÉREQUIS
 - Windows 10/11 64 bits.
@@ -34,5 +34,6 @@ SÉCURITÉ
 - L'affichage macro comporte la mention FRED requise : le produit n'est ni approuvé ni certifié par la Federal Reserve Bank of St. Louis.
 - DXY reste automatique uniquement si le symbole DXY existe chez le broker et est renseigné dans la correspondance des symboles. Le COT et le régime risk-on/off restent à valider manuellement.
 - Les données du compte sont lues sur le PC et affichées dans ton navigateur.
+- Le point d'accès `/api/history?days=90` expose les deals historiques et les identifiants de positions encore ouvertes en lecture seule, pour calculer les statistiques des positions clôturées.
 - Le P&L journalier fourni est calculé depuis minuit UTC ; les limites broker/prop firm peuvent avoir un autre découpage et inclure le flottant.
 - Le cockpit et le pont ne garantissent aucun résultat de trading.
