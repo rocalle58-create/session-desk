@@ -173,7 +173,7 @@ initMarketIntel();
 // MT5 read-only local feed. The bridge has no trade/order route.
 const mt5TFList=['M1','M5','M15','M30','H1','H4','D1','W1'];
 const mt5MapFields={XAUUSD:'mt5SymGold',DXY:'mt5SymDxy',XAGUSD:'mt5SymSilver',EURUSD:'mt5SymEur',GBPUSD:'mt5SymGbp',USDJPY:'mt5SymJpy'};
-let mt5Live=false,mt5Timer=null,mt5Polling=false,mt5LastPack=0,mt5LastQuote=null,mt5StatusCache=null;
+let mt5Live=false,mt5Timer=null,mt5QuoteTimer=null,mt5Polling=false,mt5QuotePolling=false,mt5LastPack=0,mt5LastQuote=null,mt5StatusCache=null;
 const mt5KeyName='tpcMt5ApiKeySession',mt5BaseName='tpcMt5BaseUrl';
 const mt5Base=()=>($('mt5BaseUrl').value.trim().replace(/\/$/,'')||'http://127.0.0.1:8765');
 const mt5Key=()=>sessionStorage.getItem(mt5KeyName)||$('mt5ApiKey').value.trim();
@@ -266,6 +266,17 @@ async function mt5PollMarkets(){
   }catch(e){mt5State('ERREUR FLUX MT5','red');$('mt5LastUpdate').textContent=e.message}
   finally{mt5Polling=false}
 }
+async function mt5PollQuotes(){
+  if(!mt5Live||mt5QuotePolling)return;mt5QuotePolling=true;
+  try{
+    const symbol=$('mt5SymGold').value.trim();if(!symbol)return;
+    const q=await mt5Request('/api/quote?symbol='+encodeURIComponent(symbol));
+    mt5UpdateQuote(q);
+    if(q.stale)mt5State('TICK PÉRIMÉ · ATTENTION','amber');
+    else mt5State('MT5 CONNECTÉ · '+mt5Profile(),'green');
+  }catch(e){mt5State('FLUX TICK INTERROMPU','red');$('mt5GoldBidTime').textContent=e.message}
+  finally{mt5QuotePolling=false}
+}
 async function mt5Connect(){
   const key=$('mt5ApiKey').value.trim()||sessionStorage.getItem(mt5KeyName)||'';
   if(!key){mt5State('CLÉ LOCALE REQUISE','amber');$('mt5LastUpdate').textContent='Colle la clé affichée dans la fenêtre du pont local.';return}
@@ -276,15 +287,16 @@ async function mt5Connect(){
     await mt5Request('/api/connect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profile:mt5Profile()})});
     mt5Live=true;$('mt5DisconnectBtn').disabled=false;
     await mt5PollMarkets();
-    if(mt5Timer)clearInterval(mt5Timer);
-    mt5Timer=setInterval(mt5PollMarkets,8000);
+    if(mt5Timer)clearInterval(mt5Timer);if(mt5QuoteTimer)clearInterval(mt5QuoteTimer);
+    mt5Timer=setInterval(mt5PollMarkets,8000);mt5QuoteTimer=setInterval(mt5PollQuotes,1500);
+    await mt5PollQuotes();
     mt5State('MT5 CONNECTÉ · '+mt5Profile(),'green');
     $('mt5LastUpdate').textContent='Flux actif · actualisation OHLC toutes les 8 secondes. Garde cette page et MT5 ouverts.';
   }catch(e){mt5Live=false;mt5State('CONNEXION IMPOSSIBLE','red');$('mt5LastUpdate').textContent=e.message+' Vérifie MT5, la clé locale et l’autorisation réseau local du navigateur.'}
   finally{$('mt5ConnectBtn').disabled=false}
 }
 async function mt5Disconnect(){
-  mt5Live=false;if(mt5Timer){clearInterval(mt5Timer);mt5Timer=null}
+  mt5Live=false;if(mt5Timer){clearInterval(mt5Timer);mt5Timer=null}if(mt5QuoteTimer){clearInterval(mt5QuoteTimer);mt5QuoteTimer=null}
   try{if(mt5Key())await mt5Request('/api/disconnect',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})}catch{}
   $('mt5DisconnectBtn').disabled=true;mt5State('PONT DÉCONNECTÉ','amber');$('mt5LastUpdate').textContent='La synchronisation MT5 est arrêtée. Les historiques déjà importés restent conservés dans ce navigateur.';
 }
