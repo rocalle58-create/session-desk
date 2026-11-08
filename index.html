@@ -693,12 +693,12 @@ function ccRenderCommandCenter(){
  ccRenderLiquidity();ccScanSMC();ccSessionControl();ccRenderNews();ccRenderRisk();ccObserve();
  $('ccLastRefresh').textContent='Dernière analyse '+new Date().toLocaleTimeString('fr-FR')+' · calcul local sur bougies clôturées.';
 }
-function ccGroupHistory(deals){
+function ccGroupHistory(deals,openIds=[]){
  const groups=new Map();deals.forEach(d=>{const id=Number(d.position_id||0);if(!id)return;let g=groups.get(id);if(!g){g={id,symbol:d.symbol,net:0,volume:0,side:Number(d.type)===0?'BUY':Number(d.type)===1?'SELL':'—',lastExit:0,hasExit:false,dealCount:0};groups.set(id,g)}
   g.net+=Number(d.profit||0)+Number(d.commission||0)+Number(d.swap||0)+Number(d.fee||0);g.volume=Math.max(g.volume,Number(d.volume||0));g.dealCount++;
   if([1,2,3].includes(Number(d.entry))){g.hasExit=true;g.lastExit=Math.max(g.lastExit,Number(d.time_msc||d.time*1000))}
  });
- return [...groups.values()].filter(g=>g.hasExit).sort((a,b)=>a.lastExit-b.lastExit);
+ const openSet=new Set((openIds||[]).map(Number));return [...groups.values()].filter(g=>g.hasExit&&!openSet.has(g.id)).sort((a,b)=>a.lastExit-b.lastExit);
 }
 function ccRenderPerformance(rows,ccy){
  const n=rows.length,wins=rows.filter(x=>x.net>0),losses=rows.filter(x=>x.net<0),grossWin=wins.reduce((s,x)=>s+x.net,0),grossLoss=Math.abs(losses.reduce((s,x)=>s+x.net,0)),net=rows.reduce((s,x)=>s+x.net,0),pf=grossLoss?grossWin/grossLoss:grossWin>0?Infinity:null;
@@ -712,7 +712,7 @@ async function ccLoadHistory(){
  $('ccHistoryStatus').textContent='Lecture de l’historique MT5…';
  try{
   const days=Number($('ccHistoryDays').value||90),data=await mt5Request('/api/history?days='+days);
-  let rows=ccGroupHistory(data.deals||[]);const mapping=mt5Map(),gold=mapping.XAUUSD;
+  let rows=ccGroupHistory(data.deals||[],data.open_position_ids||[]);const mapping=mt5Map(),gold=mapping.XAUUSD;
   if($('ccHistorySymbol').value==='gold'&&gold)rows=rows.filter(x=>x.symbol===gold);
   ccHistoryRows=rows;ccRenderPerformance(rows,mt5StatusCache?.account?.currency||currency());
   $('ccHistoryStatus').textContent=rows.length+' positions clôturées · '+days+' jours · '+data.count+' deals reçus';
