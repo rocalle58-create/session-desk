@@ -258,6 +258,7 @@ async function mt5PollMarkets(){
     const q=new URLSearchParams({symbols:symbols.join(','),timeframes:mt5TFList.join(','),count:'180'});
     const pack=await mt5Request('/api/market-pack?'+q.toString());
     if(!pack.connected)throw new Error('Le terminal MT5 est déconnecté.');
+    if(!pack.markets?.[mapping.XAUUSD])throw new Error('Symbole Gold MT5 introuvable : '+mapping.XAUUSD+'. Vérifie le nom exact dans Market Watch (XAUUSD, GOLD, XAUUSD.a, etc.).');
     mt5ShowAccount(pack);
     mt5ImportPack(pack,mapping);
     const gold=pack.markets?.[mapping.XAUUSD]?.quote;
