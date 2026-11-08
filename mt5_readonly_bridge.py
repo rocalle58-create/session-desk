@@ -4,7 +4,7 @@ Binds only to loopback; intentionally has no order placement/modification route.
 from __future__ import annotations
 import json, secrets, threading, time, csv, io, urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -189,6 +189,38 @@ def positions_data():
         items.append({"ticket":int(p.ticket),"symbol":p.symbol,"side":side,"volume":float(p.volume),"open":float(p.price_open),"sl":float(p.sl),"tp":float(p.tp),"profit":float(p.profit),"swap":float(p.swap),"risk_to_sl":risk})
     return items, total if known else None
 
+def history_deals(days=90, symbol_filter=""):
+    """Read-only deal history for performance analytics; never accesses order placement."""
+    lib=api()
+    now=datetime.now(timezone.utc)
+    start=now-timedelta(days=max(1,min(int(days),365)))
+    deals=lib.history_deals_get(start,now)
+    if deals is None:
+        raise RuntimeError(f"Historique des deals indisponible : {lib.last_error()}")
+    rows=[]
+    for d in deals:
+        symbol=str(getattr(d,"symbol","") or "")
+        if symbol_filter and symbol_filter.upper() not in symbol.upper():
+            continue
+        rows.append({
+            "ticket": int(getattr(d,"ticket",0) or 0),
+            "position_id": int(getattr(d,"position_id",0) or 0),
+            "time": int(getattr(d,"time",0) or 0),
+            "time_msc": int(getattr(d,"time_msc",0) or 0),
+            "symbol": symbol,
+            "type": int(getattr(d,"type",-1)),
+            "entry": int(getattr(d,"entry",-1)),
+            "volume": float(getattr(d,"volume",0) or 0),
+            "price": float(getattr(d,"price",0) or 0),
+            "profit": float(getattr(d,"profit",0) or 0),
+            "commission": float(getattr(d,"commission",0) or 0),
+            "swap": float(getattr(d,"swap",0) or 0),
+            "fee": float(getattr(d,"fee",0) or 0),
+            "comment": str(getattr(d,"comment","") or "")
+        })
+    return {"days":int(days),"from":start.isoformat(),"to":now.isoformat(),
+            "count":len(rows),"deals":rows,"read_only":True}
+
 def daily_pnl():
     lib=api(); now=datetime.now(timezone.utc); start=now.replace(hour=0,minute=0,second=0,microsecond=0)
     deals=lib.history_deals_get(start,now)
@@ -226,6 +258,10 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if p.path=="/api/macro": self.out(200,fred_macro_data()); return
             with LOCK:
+                if p.path=="/api/history":
+                    days=min(365,max(1,int((q.get("days") or ["90"])[0])))
+                    symbol_filter=(q.get("symbol") or [""])[0].strip()
+                    self.out(200,history_deals(days,symbol_filter)); return
                 if p.path=="/api/status":
                     lib,t,a=connected(); pos,risk=positions_data(); pnl=daily_pnl(); floating=sum(x["profit"]+x["swap"] for x in pos)
                     self.out(200,{"connected":True,"profile":active_profile,"account":account_json(a,t),"positions":pos,"positions_count":len(pos),"open_risk_cash":risk,"daily_realized_pnl_utc":pnl,"daily_pnl_utc_with_floating":pnl+floating if pnl is not None else None,"read_only":True}); return
