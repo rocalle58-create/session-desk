@@ -48,12 +48,152 @@
 .cc-stat-good{color:var(--green)}.cc-stat-bad{color:var(--red)}
 @media(max-width:900px){.cc-level-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:540px){.cc-level-grid{grid-template-columns:1fr}.cc-event,.cc-alert{align-items:flex-start}}
+
+/* =========================
+   TPC PIT-WALL UI REFRESH
+   Visual-only layer · v2
+   ========================= */
+:root{--bg:#070e18;--panel:#0d1928;--panel2:#13263a;--line:#2a4057;--txt:#f3f7ff;--muted:#b2c0d1;--cyan:#6be9dc;--green:#67e2a4;--red:#ff7884;--amber:#ffd071;--blue:#91bdff;--radius:15px}
+html{scroll-behavior:smooth;scroll-padding-top:92px}
+body{background:radial-gradient(ellipse at 82% -12%,rgba(39,102,137,.30),transparent 39%),radial-gradient(ellipse at 8% 35%,rgba(18,50,77,.18),transparent 36%),linear-gradient(180deg,#070e18 0%,#091320 58%,#070e18 100%);color:var(--txt);font-size:15px;line-height:1.55}
+.wrap{max-width:1580px;padding:22px 26px 34px}
+.top{gap:20px;margin-bottom:12px;align-items:center}
+.brand{gap:15px;min-width:0}
+.logo{width:54px;height:54px;border-radius:15px;background:linear-gradient(145deg,#8cf3e7 0%,#50b9d4 50%,#729aff 100%);color:#06121d;font-size:18px;letter-spacing:-.08em;box-shadow:0 0 0 5px rgba(107,233,220,.08),0 9px 26px rgba(0,0,0,.28);position:relative}
+.logo:after{content:"";position:absolute;inset:5px;border:1px solid rgba(4,22,34,.25);border-radius:11px}
+.eyebrow{font-size:11px;letter-spacing:.18em;color:#7ce9df}
+h1{font-size:clamp(25px,3vw,36px);letter-spacing:-.035em;font-weight:850}
+h2{font-size:19px;letter-spacing:-.015em;font-weight:800;margin-bottom:13px}
+h3{font-size:15px;font-weight:800}
+.small{font-size:12px;color:var(--muted);line-height:1.55}
+.muted{color:var(--muted)}
+.top-actions{justify-content:flex-end;gap:9px}
+.status{padding:8px 12px;background:#102337;border-color:#35536c;font-size:11px;letter-spacing:.06em}
+.lamp{width:9px;height:9px;box-shadow:0 0 12px currentColor}
+.btn{min-height:40px;padding:9px 14px;border-radius:9px;background:linear-gradient(180deg,#1a3047,#122438);border-color:#35506b;color:#f3f7ff;font-size:12px;font-weight:800;letter-spacing:.025em;transition:transform .16s ease,border-color .16s ease,filter .16s ease}
+.btn:hover:not(:disabled){transform:translateY(-1px);border-color:#71dace;filter:brightness(1.12)}
+.btn:focus-visible,.tab:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.btn.primary{background:linear-gradient(135deg,#8cf0e3,#56c6d6);color:#06141e;box-shadow:0 5px 18px rgba(65,199,195,.15)}
+.btn.danger{background:linear-gradient(180deg,#47232d,#321923);border-color:#a34c5a;color:#ffd8db}
+.card{background:linear-gradient(145deg,rgba(17,34,53,.98),rgba(10,22,36,.98));border:1px solid #2a4057;border-radius:15px;padding:19px;box-shadow:0 13px 34px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.025);position:relative}
+.card>h2,.card .row>div>h2{color:#f4f8ff}
+.card h2:before{content:"";display:inline-block;width:4px;height:16px;border-radius:5px;background:var(--cyan);margin-right:9px;vertical-align:-2px;box-shadow:0 0 12px rgba(107,233,220,.3)}
+.hero{grid-template-columns:minmax(0,1.25fr) minmax(390px,1fr);gap:13px;margin:13px 0 15px}
+.hero-main{padding:25px 26px;background:linear-gradient(115deg,rgba(20,55,75,.94),rgba(13,28,46,.97) 58%,rgba(14,28,45,.98));border-color:#3d7180;overflow:hidden}
+.hero-main:after{content:"";position:absolute;right:-40px;top:-80px;width:280px;height:280px;border:1px solid rgba(107,233,220,.13);border-radius:50%;box-shadow:0 0 0 22px rgba(107,233,220,.025),0 0 0 50px rgba(107,233,220,.02);pointer-events:none}
+.hero-main h2{font-size:clamp(24px,2.5vw,34px)!important;line-height:1.15;letter-spacing:-.035em}
+.hero-main p{font-size:13px;max-width:700px;color:#c0cedc;position:relative;z-index:1}
+.kpis{gap:9px;align-content:stretch}
+.metric{background:linear-gradient(160deg,#0d1b2b,#091522);border:1px solid #2d435a;border-radius:12px;padding:14px;min-height:94px;box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}
+.metric span{font-size:10px;letter-spacing:.11em;color:#b7c6d7;font-weight:800}
+.metric b{font-size:clamp(21px,2vw,27px);line-height:1.18;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#f6faff}
+.metric em{font-size:11px;color:#9fb0c2;margin-top:5px;display:block}
+.mission-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:15px}
+.mission-cell{display:flex;align-items:center;gap:10px;min-width:0;padding:10px 13px;border:1px solid #263d54;border-radius:10px;background:linear-gradient(100deg,rgba(16,36,55,.92),rgba(10,23,38,.92))}
+.mission-cell small{display:block;color:#9eb3c8;font-size:9px;font-weight:850;letter-spacing:.14em}
+.mission-cell b{display:block;color:#eff8ff;font-size:11px;letter-spacing:.035em;overflow-wrap:anywhere}
+.mission-led{flex:0 0 9px;width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 12px rgba(103,226,164,.65)}
+.mission-led.cyan{background:var(--cyan);box-shadow:0 0 12px rgba(107,233,220,.65)}
+.mission-led.amber{background:var(--amber);box-shadow:0 0 12px rgba(255,208,113,.5)}
+.tabs{position:sticky;top:0;z-index:30;gap:7px;overflow-x:auto;padding:10px 10px 11px;margin:0 -6px 14px;background:rgba(7,14,24,.94);border:1px solid rgba(63,91,116,.65);border-radius:12px;backdrop-filter:blur(14px);box-shadow:0 10px 25px rgba(0,0,0,.24);scrollbar-width:thin}
+.tab{min-height:42px;padding:10px 14px;border:1px solid transparent;background:transparent;color:#afc0d1;font-size:11px;font-weight:850;letter-spacing:.035em;border-radius:8px}
+.tab:hover{background:#13283c;color:#edf7ff;border-color:#304960}
+.tab.active{background:linear-gradient(135deg,#163d4a,#17354a);color:#8ff2e6;border-color:#408b8e;box-shadow:inset 0 0 0 1px rgba(107,233,220,.08)}
+.tab[data-tab="command"]{margin-left:auto;border-color:#8a7140;color:#ffda8a;background:linear-gradient(135deg,rgba(75,57,26,.5),rgba(37,35,27,.4))}
+.tab[data-tab="command"].active{background:linear-gradient(135deg,#5a4825,#283846);border-color:#d3aa57;color:#ffe5a8;box-shadow:0 0 18px rgba(255,208,113,.12)}
+.grid{gap:13px}
+.field{gap:6px;margin-bottom:12px}
+.field label,.label{font-size:12px;color:#c1d0df;font-weight:800;letter-spacing:.015em}
+.field input,.field select,.field textarea,input,select,textarea{min-height:41px;padding:10px 11px;border-radius:8px;background:#071421;border-color:#344b61;color:#f1f7ff;font-size:13px}
+.field input::placeholder,.field textarea::placeholder,input::placeholder,textarea::placeholder{color:#7e93a8}
+.field textarea{min-height:82px}
+.notice{font-size:12px;line-height:1.55;padding:12px 14px;background:rgba(65,49,23,.62);border-color:#79643c;color:#ffe5ad}
+.goodbox{background:rgba(13,63,48,.55);border-color:#38795f;color:#c1f8dc}
+.badbox{background:rgba(74,30,39,.62);border-color:#99505d;color:#ffd0d4}
+.pill{font-size:10px;letter-spacing:.05em;padding:5px 9px;border:1px solid rgba(139,172,204,.18)}
+.pill.green{background:#103a2b;color:#b7f6d6;border-color:#317a5b}
+.pill.amber{background:#49391d;color:#ffe1a0;border-color:#876a36}
+.pill.red{background:#4a2029;color:#ffd1d4;border-color:#98505c}
+.decision{padding:16px;border-radius:11px;background:linear-gradient(110deg,#0a1725,#0d1d2d);border-color:#344b62}
+.decision strong{font-size:21px;letter-spacing:.015em}
+.checks{gap:9px}
+.check{padding:12px;background:#0a1827;border-color:#2a4158;border-radius:9px}
+.check b{font-size:12px;color:#f0f6fd}
+.check small{font-size:11px;line-height:1.4;color:#adbed0}
+.progress{height:9px;background:#07131f;border:1px solid #263b50}
+.progress i{background:linear-gradient(90deg,#4cb8c7,#6be9dc,#67e2a4)}
+.table{font-size:12px}
+.table th,.table td{padding:11px 10px;border-bottom-color:#263d52}
+.table th{font-size:10px;color:#b7c8d9}
+.tv-chart{border-color:#35516b;box-shadow:0 10px 28px rgba(0,0,0,.2)}
+.mt5-live-card{border:1px solid #3a7882;background:linear-gradient(155deg,rgba(16,46,62,.95),rgba(10,22,36,.98));box-shadow:0 0 0 1px rgba(107,233,220,.04),0 15px 35px rgba(0,0,0,.23)}
+.mt5-live-card .mt5-heading h2{font-size:21px}
+.mt5-readonly-note{border-left:4px solid var(--green);background:rgba(13,54,43,.55);border-color:#34775e;color:#c9f5df}
+.mt5-account-strip{padding:14px 16px;gap:10px 24px;background:rgba(4,16,27,.72);border-color:#315067;font-size:12px}
+.mt5-account-strip b{color:#f5f9ff}
+.mt5-live-grid{gap:10px}
+.mt5-live-tile{min-height:97px;padding:14px 15px;border-color:#315066;background:linear-gradient(150deg,#0a1b2a,#071421);border-radius:10px;position:relative;overflow:hidden}
+.mt5-live-tile:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#4b8394}
+.mt5-live-tile:first-child:before{background:var(--cyan)}
+.mt5-live-tile b{font-size:clamp(20px,2vw,25px);font-variant-numeric:tabular-nums;color:#efffff}
+.mt5-live-tile small{font-size:11px;line-height:1.45;color:#afc2d3}
+.mt5-symbol-settings{background:rgba(4,16,27,.52);border-color:#314a60}
+.mt5-symbol-settings summary{font-size:12px;color:#d6e4f1}
+.mt5-pos{background:#0a1826;border-color:#30485e;padding:12px}
+.intel-tile,.tf-cell,.signal-state,.signal{background:linear-gradient(150deg,#0c1b2b,#081522);border-color:#2b4258;border-radius:10px}
+.intel-tile{padding:14px}
+.intel-tile .value{font-size:22px;font-variant-numeric:tabular-nums}
+.intel-tile .hint{font-size:11px;color:#afc0d0;line-height:1.45}
+.tf-grid{gap:9px}
+.tf-cell{padding:12px;min-height:100px}
+.tf-cell b{font-size:15px}
+.tf-cell small{display:block;font-size:11px;line-height:1.45;color:#b4c4d4;margin-top:3px}
+.good-text{color:#7aeab2!important}.bad-text{color:#ff8992!important}.neutral-text{color:#ffd27a!important}
+.calendar-widget{border-color:#324a61}
+.upload-grid{background:#0b1a2a;border-color:#43617e}
+.cc-level{padding:13px;border-color:#314a61;background:linear-gradient(150deg,#0e2031,#091725)}
+.cc-level b{font-size:17px;font-variant-numeric:tabular-nums}
+.cc-level small{font-size:11px;color:#b5c5d5}
+.cc-table{font-size:12px}
+.cc-table td,.cc-table th{padding:10px;border-bottom-color:#2a4156}
+.cc-table th{color:#bdd0df;font-size:10px}
+.cc-event,.cc-alert{padding:12px;background:#0a1928;border-color:#2d4359}
+.cc-event small,.cc-alert small{font-size:11px;color:#b4c5d5}
+.cc-check{padding:11px 9px;border-bottom-color:#2a4156}
+.cc-check b{font-size:12px}
+.cc-check small{font-size:11px;color:#aebfd0;display:block;margin-top:3px}
+#panel-command .card>h2{font-size:18px}
+#panel-command #ccLiquidityCard{border-top:2px solid #56d5cb}
+#panel-command #ccSMCCard{border-top:2px solid #8eafff}
+#panel-command #ccSessionCard{border-top:2px solid #dcb45e}
+#panel-command #ccRiskCard{border-top:2px solid #ed7e85}
+#panel-command #ccNewsCard{border-top:2px solid #d79a61}
+#panel-command #ccAlertCard{border-top:2px solid #8c9ed0}
+#panel-command #ccPerformanceCard{border-top:2px solid #69c99b}
+#panel-command .card{padding:19px}
+.footer{padding:24px 12px;color:#90a5ba;font-size:11px;letter-spacing:.035em}
+a{color:#84eee2;text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{color:#b6fff5}
+:focus-visible{outline-color:var(--cyan)}
+@media(max-width:1100px){.wrap{padding:16px}.hero{grid-template-columns:1fr}.top{align-items:flex-start}.top-actions{justify-content:flex-start}}
+@media(max-width:800px){.mission-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.tabs{top:0}.mt5-connect-grid{grid-template-columns:1fr}.mt5-symbol-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mt5-live-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mt5-pos-list{grid-template-columns:1fr}}
+@media(max-width:540px){.wrap{padding:11px}.mission-strip{grid-template-columns:1fr 1fr;gap:6px}.mission-cell{padding:9px;gap:7px}.mission-cell b{font-size:10px}.top{gap:12px}.brand{align-items:flex-start}.logo{width:45px;height:45px}.top-actions{width:100%}.top-actions .btn{flex:1}.hero-main{padding:19px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.metric{padding:11px;min-height:86px}.metric b{font-size:20px}.tabs{margin-left:-2px;margin-right:-2px;padding:8px;gap:5px}.tab{min-height:40px;padding:9px 11px;font-size:10px}.card{padding:14px;border-radius:12px}.mt5-live-tile{min-height:87px;padding:11px}.mt5-live-tile b{font-size:18px}.three,.two{grid-template-columns:1fr}.tf-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cc-level-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+@media print{.mission-strip{display:none}.tabs{position:static;background:white;border:0;box-shadow:none}}
+
 </style>
 </head>
 <body><div class="wrap">
-<header class="top"><div class="brand"><div class="logo">TPC</div><div><div class="eyebrow">Pit wall · Trading performance system</div><h1>Trading Performance Cockpit</h1><div class="small">ASSIST MODE · SIGNALS: TRADINGVIEW + COCKPIT · RISK REF 0,50%</div></div></div><div class="top-actions"><span class="status"><i class="lamp" id="globalLamp"></i><span id="globalState">CHECKS EN ATTENTE</span></span><button class="btn" id="exportBtn">Exporter sauvegarde complète</button><button class="btn" onclick="window.print()">Imprimer</button><button class="btn primary" id="saveBtn">Enregistrer session</button></div></header>
+<header class="top"><div class="brand"><div class="logo">TPC</div><div><div class="eyebrow">PIT WALL · GOLD OPERATIONS</div><h1>Trading Performance Cockpit</h1><div class="small">GOLD DESK · MULTI-TIMEFRAME INTELLIGENCE · HUMAN EXECUTION</div></div></div><div class="top-actions"><span class="status"><i class="lamp" id="globalLamp"></i><span id="globalState">CHECKS EN ATTENTE</span></span><button class="btn" id="exportBtn">Exporter sauvegarde complète</button><button class="btn" onclick="window.print()">Imprimer</button><button class="btn primary" id="saveBtn">Enregistrer session</button></div></header>
+<div class="mission-strip" aria-label="Configuration du poste de pilotage">
+ <div class="mission-cell"><span class="mission-led"></span><div><small>DATA LINK</small><b>MT5 LOCAL · READ ONLY</b></div></div>
+ <div class="mission-cell"><span class="mission-led cyan"></span><div><small>MARKET SCOPE</small><b>GOLD · XAUUSD+</b></div></div>
+ <div class="mission-cell"><span class="mission-led amber"></span><div><small>ANALYSIS ENGINE</small><b>W1 → M5 · MACRO</b></div></div>
+ <div class="mission-cell"><span class="mission-led"></span><div><small>EXECUTION MODE</small><b>MANUAL ONLY</b></div></div>
+</div>
+
 <section class="hero"><div class="card hero-main"><div class="eyebrow">Session control</div><h2 style="font-size:25px;margin:6px 0">Préparer. Confirmer. Exécuter.</h2><p>Un cockpit d’aide à la décision pour le Gold et les marchés associés. TradingView reste intégré pour les graphiques ; un pont MT5 local facultatif alimente les ticks, bougies et métriques du compte. Connexion strictement en lecture seule : aucun ordre n’est envoyé.</p><div class="two" style="margin-top:14px"><div class="field"><label>Compte de travail</label><select id="account"><option value="ftmo">FTMO · manuel</option><option value="vantage">Vantage · manuel</option></select></div><div class="field"><label>Session</label><select id="session"><option>London</option><option>New York AM</option><option>New York PM</option><option>Asia</option><option>Autre</option></select></div></div><div class="row"><span class="pill">ASSISTED AUTHORITY</span><span class="pill green">TRADINGVIEW EMBEDDED</span><span class="pill amber">MT5 READ-ONLY BRIDGE</span></div></div><div class="kpis"><div class="metric"><span>État cockpit</span><b id="stateKpi">WAIT</b><em>Feux de session</em></div><div class="metric"><span>Biais XAUUSD</span><b id="biasKpi">NEUTRE</b><em id="biasSub">À renseigner</em></div><div class="metric"><span>Risque / trade</span><b id="riskKpi">0,50%</b><em>Plafond de référence</em></div><div class="metric"><span>Budget risque</span><b id="budgetKpi">—</b><em>Après risque ouvert</em></div></div></section>
-<nav class="tabs"><button class="tab active" data-tab="cockpit">01 · Cockpit</button><button class="tab" data-tab="intel">02 · Market Intelligence</button><button class="tab" data-tab="radar">03 · Market radar</button><button class="tab" data-tab="execution">04 · Exécution & risque</button><button class="tab" data-tab="journal">05 · Performance</button><button class="tab" data-tab="command">06 · Trade Command Center</button></nav>
+<nav class="tabs"><button class="tab active" data-tab="cockpit">01 · Cockpit</button><button class="tab" data-tab="intel">02 · Market Intelligence</button><button class="tab" data-tab="radar">03 · Market radar</button><button class="tab" data-tab="execution">04 · Exécution & risque</button><button class="tab" data-tab="journal">05 · Performance</button><button class="tab" data-tab="command">PIT WALL · COMMAND CENTER</button></nav>
 <main>
 <section id="panel-cockpit" class="panel"><div class="grid">
 <div class="card s12 mt5-live-card" id="mt5LiveCard">
