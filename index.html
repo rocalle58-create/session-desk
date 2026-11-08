@@ -30,12 +30,30 @@
 .mt5-offline{color:var(--muted)}
 @media(max-width:800px){.mt5-connect-grid{grid-template-columns:1fr}.mt5-symbol-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mt5-live-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mt5-pos-list{grid-template-columns:1fr}}
 @media(max-width:480px){.mt5-symbol-grid{grid-template-columns:1fr}.mt5-live-tile b{font-size:16px}}
+ 
+.cc-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px}
+.cc-level-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.cc-level{background:#0a1524;border:1px solid var(--line);border-radius:10px;padding:10px;min-width:0}
+.cc-level b{display:block;font-size:15px;margin:3px 0}
+.cc-level small{display:block;color:var(--muted);font-size:10px}
+.cc-table{width:100%;border-collapse:collapse;font-size:12px}
+.cc-table td,.cc-table th{padding:8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.cc-table th{font-size:10px;color:var(--muted);text-transform:uppercase}
+.cc-event,.cc-alert{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px;margin:6px 0;background:#0a1524;border:1px solid var(--line);border-radius:9px}
+.cc-event small,.cc-alert small{display:block;color:var(--muted);font-size:10px}
+.cc-event button{padding:4px 8px}
+.cc-check{display:flex;justify-content:space-between;gap:9px;padding:8px;border-bottom:1px solid var(--line);font-size:11px}
+.cc-check b{font-size:11px}
+.cc-check.good b{color:var(--green)}.cc-check.bad b{color:var(--red)}.cc-check.warn b{color:var(--amber)}
+.cc-stat-good{color:var(--green)}.cc-stat-bad{color:var(--red)}
+@media(max-width:900px){.cc-level-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:540px){.cc-level-grid{grid-template-columns:1fr}.cc-event,.cc-alert{align-items:flex-start}}
 </style>
 </head>
 <body><div class="wrap">
 <header class="top"><div class="brand"><div class="logo">TPC</div><div><div class="eyebrow">Pit wall · Trading performance system</div><h1>Trading Performance Cockpit</h1><div class="small">ASSIST MODE · SIGNALS: TRADINGVIEW + COCKPIT · RISK REF 0,50%</div></div></div><div class="top-actions"><span class="status"><i class="lamp" id="globalLamp"></i><span id="globalState">CHECKS EN ATTENTE</span></span><button class="btn" id="exportBtn">Exporter sauvegarde complète</button><button class="btn" onclick="window.print()">Imprimer</button><button class="btn primary" id="saveBtn">Enregistrer session</button></div></header>
 <section class="hero"><div class="card hero-main"><div class="eyebrow">Session control</div><h2 style="font-size:25px;margin:6px 0">Préparer. Confirmer. Exécuter.</h2><p>Un cockpit d’aide à la décision pour le Gold et les marchés associés. TradingView reste intégré pour les graphiques ; un pont MT5 local facultatif alimente les ticks, bougies et métriques du compte. Connexion strictement en lecture seule : aucun ordre n’est envoyé.</p><div class="two" style="margin-top:14px"><div class="field"><label>Compte de travail</label><select id="account"><option value="ftmo">FTMO · manuel</option><option value="vantage">Vantage · manuel</option></select></div><div class="field"><label>Session</label><select id="session"><option>London</option><option>New York AM</option><option>New York PM</option><option>Asia</option><option>Autre</option></select></div></div><div class="row"><span class="pill">ASSISTED AUTHORITY</span><span class="pill green">TRADINGVIEW EMBEDDED</span><span class="pill amber">NO BROKER BRIDGE</span></div></div><div class="kpis"><div class="metric"><span>État cockpit</span><b id="stateKpi">WAIT</b><em>Feux de session</em></div><div class="metric"><span>Biais XAUUSD</span><b id="biasKpi">NEUTRE</b><em id="biasSub">À renseigner</em></div><div class="metric"><span>Risque / trade</span><b id="riskKpi">0,50%</b><em>Plafond de référence</em></div><div class="metric"><span>Budget risque</span><b id="budgetKpi">—</b><em>Après risque ouvert</em></div></div></section>
-<nav class="tabs"><button class="tab active" data-tab="cockpit">01 · Cockpit</button><button class="tab" data-tab="intel">02 · Market Intelligence</button><button class="tab" data-tab="radar">03 · Market radar</button><button class="tab" data-tab="execution">04 · Exécution & risque</button><button class="tab" data-tab="journal">05 · Performance</button></nav>
+<nav class="tabs"><button class="tab active" data-tab="cockpit">01 · Cockpit</button><button class="tab" data-tab="intel">02 · Market Intelligence</button><button class="tab" data-tab="radar">03 · Market radar</button><button class="tab" data-tab="execution">04 · Exécution & risque</button><button class="tab" data-tab="journal">05 · Performance</button><button class="tab" data-tab="command">06 · Trade Command Center</button></nav>
 <main>
 <section id="panel-cockpit" class="panel"><div class="grid">
 <div class="card s12 mt5-live-card" id="mt5LiveCard">
@@ -135,14 +153,116 @@
 <div class="card s4"><h2>Statistiques</h2><div class="metric"><span>Trades enregistrés</span><b id="statTrades">0</b></div><div class="metric" style="margin-top:8px"><span>Win rate</span><b id="statWin">—</b></div><div class="metric" style="margin-top:8px"><span>Expectancy</span><b id="statExpectancy">—</b></div><div class="metric" style="margin-top:8px"><span>Résultat cumulé</span><b id="statTotal">0R</b></div></div>
 <div class="card s8"><h2>Historique</h2><div id="journalTable" class="small">Aucun trade enregistré.</div></div>
 </div></section>
-</main><div class="footer">Trading Performance Cockpit · Assist authority · Référence risque 0,50 % · TradingView intégré · Aucun pont MT5 · Aucune garantie de performance.</div></div>
+<section id="panel-command" class="panel hidden"><div class="grid">
+<div class="card s12">
+ <div class="row" style="justify-content:space-between;align-items:center"><div><div class="eyebrow">Pit wall · manual trading mode</div><h2 style="font-size:22px;margin:3px 0">TRADE COMMAND CENTER</h2><p class="small">Radar technique, liquidités, sessions, contrôle du risque, actualités et statistiques. Toutes les décisions et exécutions restent manuelles.</p></div><span class="pill green">MANUAL EXECUTION · MT5 READ ONLY</span></div>
+ <div class="row" style="margin-top:10px"><button class="btn primary" id="ccRefreshBtn">Actualiser les analyses</button><button class="btn" id="ccEnableNotify">Activer les notifications bureau</button><span class="small" id="ccLastRefresh">En attente des données MT5.</span></div>
+</div>
+<div class="card s12" id="ccLiquidityCard">
+ <div class="row" style="justify-content:space-between"><div><h2>01 · LIQUIDITY RADAR</h2><p class="small">Extrêmes des périodes clôturées et plages de sessions. Les niveaux sont calculés à partir des bougies MT5 disponibles.</p></div><span id="ccLiquidityStatus" class="pill amber">EN ATTENTE</span></div>
+ <div class="three">
+  <div class="intel-tile"><span class="small">GOLD BID / ASK</span><div class="value" id="ccCurrentPrice">—</div><div class="hint" id="ccPriceAge">Tick en attente</div></div>
+  <div class="intel-tile"><span class="small">PROCHAINE LIQUIDITÉ AU-DESSUS</span><div class="value" id="ccNearestAbove">—</div><div class="hint" id="ccNearestAboveHint">PDH / PWH / PMH</div></div>
+  <div class="intel-tile"><span class="small">PROCHAINE LIQUIDITÉ EN DESSOUS</span><div class="value" id="ccNearestBelow">—</div><div class="hint" id="ccNearestBelowHint">PDL / PWL / PML</div></div>
+ </div>
+ <div class="small" style="margin:12px 0 7px">NIVEAUX EXTERNES · DERNIÈRES PÉRIODES COMPLÈTES</div>
+ <div class="tf-grid" id="ccExternalLevels"></div>
+ <div class="small" style="margin:12px 0 7px">PLAGES INTRADAY · HEURE DE PARIS</div>
+ <div class="tf-grid" id="ccSessionRanges"></div>
+ <div class="notice" id="ccSweepStatus" style="margin-top:10px">Analyse des balayages en attente d'au moins 55 bougies M5.</div>
+</div>
+<div class="card s12" id="ccSMCCard">
+ <div class="row" style="justify-content:space-between"><div><h2>02 · SMART MONEY SCANNER</h2><p class="small">Détection heuristique sur bougies clôturées : sweep, rupture de pivot, impulsion, FVG, OB candidat, premium/discount.</p></div><span class="pill amber" id="ccSmcStatus">EN ATTENTE</span></div>
+ <div class="chartctrl"><div class="field"><label>Unité d'analyse</label><select id="ccScanTf"><option>M5</option><option>M15</option><option>H1</option></select></div><div class="field"><label>Lookback sweep</label><select id="ccScanLookback"><option value="12">12 bougies</option><option value="20" selected>20 bougies</option><option value="30">30 bougies</option></select></div></div>
+ <div class="three">
+  <div class="intel-tile"><span class="small">STRUCTURE</span><div class="value" id="ccSmcStructure">—</div><div class="hint" id="ccSmcStructureHint">Pivots confirmés</div></div>
+  <div class="intel-tile"><span class="small">DERNIER FVG</span><div class="value" id="ccSmcFvg">—</div><div class="hint" id="ccSmcFvgHint">Zone potentielle, non entrée</div></div>
+  <div class="intel-tile"><span class="small">RANGE / POSITION</span><div class="value" id="ccSmcPd">—</div><div class="hint" id="ccSmcPdHint">Premium / Discount</div></div>
+ </div>
+ <div id="ccSmcRows" style="margin-top:10px"></div>
+ <p class="small" style="margin-top:8px">Un pivot est confirmé avec deux bougies à droite ; un MSS/OB/FVG détecté reste un candidat technique à vérifier visuellement. Aucun motif ne constitue seul un signal d'entrée.</p>
+</div>
+<div class="card s6" id="ccSessionCard">
+ <h2>03 · SESSION CONTROL</h2>
+ <div class="metric"><span>Fenêtre en cours / prochaine</span><b id="ccSessionNow">—</b><em id="ccSessionCountdown">Calcul en attente</em></div>
+ <div class="three" style="margin-top:9px">
+  <div class="field"><label>Asia début</label><input id="ccAsiaStart" type="time" value="00:00"></div>
+  <div class="field"><label>Asia fin</label><input id="ccAsiaEnd" type="time" value="08:00"></div>
+  <div class="field"><label>London début / fin</label><input id="ccLondonStart" type="time" value="08:00"><input id="ccLondonEnd" type="time" value="11:00"></div>
+  <div class="field"><label>New York début</label><input id="ccNyStart" type="time" value="14:30"></div>
+  <div class="field"><label>New York fin</label><input id="ccNyEnd" type="time" value="17:00"></div>
+ </div>
+ <div class="notice" id="ccSessionStatus">Les horaires sont personnalisables et exprimés en heure de Paris. Ajuste-les lors des changements saisonniers si nécessaire.</div>
+</div>
+<div class="card s6" id="ccRiskCard">
+ <h2>04 · RISK GUARDIAN</h2>
+ <div class="two">
+  <div class="field"><label>Spread maximum (points)</label><input id="ccMaxSpread" type="number" min="1" step="1" value="60"></div>
+  <div class="field"><label>Marge minimale (%)</label><input id="ccMinMargin" type="number" min="50" step="10" value="200"></div>
+ </div>
+ <div class="three">
+  <div class="intel-tile"><span class="small">DAILY P&L</span><div class="value" id="ccRiskPnl">—</div><div class="hint" id="ccRiskPnlHint">P&L du pont MT5 · UTC</div></div>
+  <div class="intel-tile"><span class="small">MARGIN LEVEL</span><div class="value" id="ccMarginLevel">—</div><div class="hint">Equity / marge utilisée</div></div>
+  <div class="intel-tile"><span class="small">RISQUE OUVERT</span><div class="value" id="ccOpenRisk">—</div><div class="hint" id="ccOpenRiskHint">Au SL connu uniquement</div></div>
+ </div>
+ <div id="ccRiskChecks" style="margin-top:10px"></div>
+ <div class="notice" style="margin-top:9px">Le Guardian avertit et conseille une pause ; il ne ferme aucune position, ne bloque pas le broker et ne remplace pas les limites officielles FTMO. Les positions sans SL rendent le risque exact inconnu.</div>
+</div>
+<div class="card s6" id="ccNewsCard">
+ <h2>05 · NEWS SHOCK RADAR</h2>
+ <p class="small">Ajoute ici les annonces confirmées depuis le calendrier. Le widget externe ne transmet pas directement ses données au moteur.</p>
+ <div class="field"><label>Événement</label><input id="ccEventTitle" maxlength="90" placeholder="Ex. CPI américain / FOMC / NFP"></div>
+ <div class="two">
+  <div class="field"><label>Date et heure (Paris)</label><input id="ccEventTime" type="datetime-local"></div>
+  <div class="field"><label>Impact</label><select id="ccEventImpact"><option value="high">Élevé</option><option value="medium">Moyen</option><option value="low">Faible</option></select></div>
+ </div>
+ <div class="two">
+  <div class="field"><label>Pause avant (min)</label><input id="ccEventBefore" type="number" min="0" max="240" value="15"></div>
+  <div class="field"><label>Pause après (min)</label><input id="ccEventAfter" type="number" min="0" max="240" value="15"></div>
+ </div>
+ <button class="btn primary" id="ccAddEvent">Ajouter l'événement</button>
+ <div class="metric" style="margin-top:10px"><span>STATUT NEWS</span><b id="ccNewsStatus">Aucune pause active</b><em id="ccNewsCountdown">Ajoute les heures officielles en heure de Paris.</em></div>
+ <div id="ccEventList" style="margin-top:9px"></div>
+</div>
+<div class="card s6" id="ccAlertCard">
+ <h2>06 · ALERT ENGINE</h2>
+ <div class="checks">
+  <label class="check"><input type="checkbox" id="ccAlertLiquidity" checked><span><b>Approche d'une liquidité</b><small>Distance réglable au niveau externe.</small></span></label>
+  <label class="check"><input type="checkbox" id="ccAlertSweep" checked><span><b>Sweep détecté</b><small>Sur bougie clôturée uniquement.</small></span></label>
+  <label class="check"><input type="checkbox" id="ccAlertBias" checked><span><b>Changement de biais</b><small>Sur synthèse multi-timeframe.</small></span></label>
+  <label class="check"><input type="checkbox" id="ccAlertSpread" checked><span><b>Spread excessif / tick périmé</b><small>Seuils du Risk Guardian.</small></span></label>
+  <label class="check"><input type="checkbox" id="ccAlertNews" checked><span><b>Fenêtre d'annonce élevée</b><small>Événements ajoutés manuellement.</small></span></label>
+ </div>
+ <div class="field" style="margin-top:9px"><label>Distance d'approche d'une liquidité (prix Gold)</label><input id="ccNearDistance" type="number" min="0.1" step="0.1" value="3.0"></div>
+ <div class="row"><button class="btn" id="ccClearAlerts">Effacer le journal</button><span class="small" id="ccNotifyStatus">Alertes visibles uniquement quand ce site reste ouvert.</span></div>
+ <div id="ccAlertFeed" style="margin-top:9px"></div>
+ <p class="small" style="margin-top:8px">Les notifications navigateur nécessitent une autorisation. Le navigateur et le PC doivent rester actifs ; aucune surveillance n'est exécutée lorsque la page et le connecteur sont arrêtés.</p>
+</div>
+<div class="card s12" id="ccPerformanceCard">
+ <div class="row" style="justify-content:space-between"><div><h2>07 · PERFORMANCE LAB · HISTORIQUE MT5</h2><p class="small">Statistiques issues des deals clôturés du terminal sélectionné. Les commissions, swaps et frais sont inclus dans le résultat net.</p></div><button class="btn primary" id="ccLoadHistory">Charger l'historique MT5</button></div>
+ <div class="chartctrl" style="margin:8px 0"><div class="field"><label>Historique</label><select id="ccHistoryDays"><option value="30">30 jours</option><option value="90" selected>90 jours</option><option value="180">180 jours</option><option value="365">365 jours</option></select></div><div class="field"><label>Marché</label><select id="ccHistorySymbol"><option value="all">Tous les symboles</option><option value="gold">Gold uniquement</option></select></div><span class="small" id="ccHistoryStatus">Aucune donnée chargée.</span></div>
+ <div class="kpis" style="margin:9px 0">
+  <div class="metric"><span>Positions clôturées</span><b id="ccPerfTrades">—</b></div>
+  <div class="metric"><span>Win rate</span><b id="ccPerfWin">—</b></div>
+  <div class="metric"><span>Profit factor</span><b id="ccPerfPf">—</b></div>
+  <div class="metric"><span>Résultat net</span><b id="ccPerfNet">—</b></div>
+ </div>
+ <div class="three">
+  <div class="intel-tile"><span class="small">GAIN MOYEN</span><div class="value" id="ccPerfAvgWin">—</div></div>
+  <div class="intel-tile"><span class="small">PERTE MOYENNE</span><div class="value" id="ccPerfAvgLoss">—</div></div>
+  <div class="intel-tile"><span class="small">MAX DRAWDOWN HISTORIQUE</span><div class="value" id="ccPerfDd">—</div></div>
+ </div>
+ <div id="ccPerfTable" style="overflow:auto;margin-top:10px">Connecte MT5 puis charge l'historique.</div>
+ <p class="small" style="margin-top:8px">Le calcul est regroupé par identifiant de position MT5. Le R moyen et l'espérance en R ne sont pas déduits car le risque initial historique (SL) n'est pas toujours exposé par les deals. La série ne remplace pas les relevés FTMO.</p>
+</div>
+</div></section></main><div class="footer">Trading Performance Cockpit · Assist authority · Référence risque 0,50 % · TradingView intégré · Pont MT5 en lecture seule · Exécution manuelle · Aucune garantie de performance.</div></div>
 <script>
 const $=id=>document.getElementById(id), fmt=(n,d=2)=>Number(n).toLocaleString('fr-FR',{minimumFractionDigits:d,maximumFractionDigits:d}), store='tpcAssistV4';let journal=JSON.parse(localStorage.getItem(store)||'[]'),armed=false,sessionLocked=false,lastTicket=null,autoGoldBias=null;
 const accounts={ftmo:{equity:100000,currency:'USD'},vantage:{equity:500,currency:'EUR'}};
 const symbols={XAUUSD:'OANDA:XAUUSD',XAGUSD:'OANDA:XAGUSD',EURUSD:'FX:EURUSD',GBPUSD:'FX:GBPUSD',USDJPY:'FX:USDJPY',DXY:'TVC:DXY',BTCUSD:'BITSTAMP:BTCUSD',NASDAQ:'NASDAQ:NDX',SP500:'SP:SPX'};
 function currency(){return $('currency').value||'USD'}function money(n){return fmt(n,2)+' '+currency()}function num(id){return Number($(id).value)||0}
 function localSave(){localStorage.setItem(store,JSON.stringify(journal))}
-function setTab(tab){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('hidden',p.id!=='panel-'+tab));if(tab==='intel')loadEconomicCalendar()}
+function setTab(tab){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('hidden',p.id!=='panel-'+tab));if(tab==='intel')loadEconomicCalendar();if(tab==='command'&&typeof ccRenderCommandCenter==='function')ccRenderCommandCenter()}
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));$('goRadar').onclick=()=>setTab('radar');
 function mountWidget(id,src,config,height){const host=$(id);if(!host)return;host.replaceChildren();const outer=document.createElement('div');outer.className='tradingview-widget-container';outer.style.width='100%';outer.style.height=height+'px';const inner=document.createElement('div');inner.className='tradingview-widget-container__widget';inner.style.width='100%';inner.style.height='100%';const script=document.createElement('script');script.src=src;script.async=true;script.textContent=JSON.stringify(config);outer.append(inner,script);host.append(outer)}
 function loadTicker(){mountWidget('ticker','https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js',{symbols:[{proName:'OANDA:XAUUSD',title:'Gold'},{proName:'OANDA:XAGUSD',title:'Silver'},{proName:'FX:EURUSD',title:'EURUSD'},{proName:'FX:GBPUSD',title:'GBPUSD'},{proName:'FX:USDJPY',title:'USDJPY'},{proName:'TVC:DXY',title:'DXY'},{proName:'BITSTAMP:BTCUSD',title:'BTC/USD'}],showSymbolLogo:true,colorTheme:'dark',isTransparent:true,displayMode:'adaptive',locale:'fr'},58)}
@@ -325,6 +445,7 @@ function mt5UpdateQuote(quote){
     if(tickValue>0)$('tickValue').value=tickValue;
     if(step>0)$('lotStep').value=step;
   }
+  if(typeof ccRenderCommandCenter==='function'){ccRenderRisk();ccObserve()}
 }
 function mt5ImportPack(pack,mapping){
   const errors=[];let imported=0;const markets=pack.markets||{};
@@ -354,6 +475,7 @@ async function mt5PollMarkets(){
     if(!pack.markets?.[mapping.XAUUSD])throw new Error('Symbole Gold MT5 introuvable : '+mapping.XAUUSD+'. Vérifie le nom exact dans Market Watch (XAUUSD, GOLD, XAUUSD.a, etc.).');
     mt5ShowAccount(pack);
     mt5ImportPack(pack,mapping);
+    if(typeof ccRenderCommandCenter==='function')ccRenderCommandCenter();
     const gold=pack.markets?.[mapping.XAUUSD]?.quote;
     if(gold&&gold.stale){mt5State('TICK PÉRIMÉ · ATTENTION','amber')}
     else mt5State('MT5 CONNECTÉ · '+mt5Profile(),'green');
@@ -404,4 +526,208 @@ $('mt5ApiKey').value=sessionStorage.getItem(mt5KeyName)||'';
 $('account').addEventListener('change',()=>{if(mt5Live){mt5Disconnect().then(()=>{mt5State('PROFIL MODIFIÉ · RECONNECTE','amber')})}});
 Object.values(mt5MapFields).forEach(id=>$(id).addEventListener('change',()=>{if(mt5Live)mt5PollMarkets()}));
 
+
+// TRADE COMMAND CENTER v1 — manual decision support, read-only broker history.
+const CC_KEY='tpcTradeCommandV1',CC_EVENTS_KEY='tpcNewsEventsV1';
+const ccDefault={AsiaStart:'00:00',AsiaEnd:'08:00',LondonStart:'08:00',LondonEnd:'11:00',NyStart:'14:30',NyEnd:'17:00',MaxSpread:60,MinMargin:200,NearDistance:3,ScanTf:'M5',ScanLookback:20};
+let ccCfg=(()=>{try{return {...ccDefault,...JSON.parse(localStorage.getItem(CC_KEY)||'{}')}}catch{return {...ccDefault}}})();
+let ccEvents=(()=>{try{return JSON.parse(localStorage.getItem(CC_EVENTS_KEY)||'[]')}catch{return []}})();
+let ccAlertLog=[],ccAlertState=new Map(),ccHistoryRows=[],ccNotificationState='default',ccLastBias=null,ccLastNewsWindow=null;
+function ccSaveCfg(){const c={};Object.keys(ccDefault).forEach(k=>{const el=$('cc'+k);if(el)c[k]=['MaxSpread','MinMargin','NearDistance','ScanLookback'].includes(k)?Number(el.value):el.value});ccCfg={...ccDefault,...ccCfg,...c};localStorage.setItem(CC_KEY,JSON.stringify(ccCfg))}
+function ccLoadCfg(){Object.keys(ccDefault).forEach(k=>{const el=$('cc'+k);if(el&&ccCfg[k]!==undefined)el.value=ccCfg[k]})}
+function ccParis(ts){const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Paris',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date(ts*1000));return Object.fromEntries(parts.filter(p=>p.type!=='literal').map(p=>[p.type,p.value]))}
+function ccDateKey(ts){const p=ccParis(ts);return p.year+'-'+p.month+'-'+p.day}
+function ccWeekKey(ts){const p=ccParis(ts),d=new Date(Date.UTC(Number(p.year),Number(p.month)-1,Number(p.day))),day=(d.getUTCDay()+6)%7;d.setUTCDate(d.getUTCDate()-day);return d.toISOString().slice(0,10)}
+function ccMonthKey(ts){const p=ccParis(ts);return p.year+'-'+p.month}
+function ccPeriodLevels(rows,keyFn,currentKey,prefix){
+ if(!rows||!rows.length)return [];
+ const groups=new Map();rows.forEach(b=>{const k=keyFn(b.t);if(!groups.has(k))groups.set(k,{hi:-Infinity,lo:Infinity});const g=groups.get(k);g.hi=Math.max(g.hi,b.h);g.lo=Math.min(g.lo,b.l)});
+ const keys=[...groups.keys()].filter(k=>k<currentKey).sort();if(!keys.length)return [];
+ const k=keys[keys.length-1],g=groups.get(k);return [{name:prefix+'H',price:g.hi,period:k},{name:prefix+'L',price:g.lo,period:k}];
+}
+function ccParisMinutes(ts){const p=ccParis(ts);return Number(p.hour)*60+Number(p.minute)}
+function ccTimeValue(s){const [h,m]=(s||'00:00').split(':').map(Number);return h*60+m}
+function ccSessionRange(rows,start,end,dayKey){
+ const a=(rows||[]).filter(b=>ccDateKey(b.t)===dayKey);const lo=ccTimeValue(start),hi=ccTimeValue(end);
+ const selected=a.filter(b=>{const x=ccParisMinutes(b.t);return hi>=lo?(x>=lo&&x<hi):(x>=lo||x<hi)});
+ if(!selected.length)return null;return {high:Math.max(...selected.map(x=>x.h)),low:Math.min(...selected.map(x=>x.l)),count:selected.length};
+}
+function ccFormatPrice(x){return x===null||x===undefined||!Number.isFinite(Number(x))?'—':fmt(Number(x),Number(mt5LastQuote?.meta?.digits??2))}
+function ccEsc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function ccLevels(){
+ const day=closedOHLC('XAUUSD_D1'),now=Date.now()/1000,dayKey=ccDateKey(now),weekKey=ccWeekKey(now),monthKey=ccMonthKey(now);
+ const levels=[...ccPeriodLevels(day,ccDateKey,dayKey,'PD'),...ccPeriodLevels(day,ccWeekKey,weekKey,'PW'),...ccPeriodLevels(day,ccMonthKey,monthKey,'PM')];
+ return levels;
+}
+function ccSweepOnLevels(levels,tf='M5'){
+ const bars=closedOHLC('XAUUSD_'+tf);if(!bars||bars.length<3)return [];
+ const bar=bars[bars.length-1],out=[];
+ for(const l of levels){if(bar.h>l.price&&bar.c<l.price)out.push({direction:'bear',level:l,extreme:bar.h,bar});if(bar.l<l.price&&bar.c>l.price)out.push({direction:'bull',level:l,extreme:bar.l,bar})}
+ return out;
+}
+function ccRenderLiquidity(){
+ const now=Date.now()/1000,levels=ccLevels(),q=mt5LastQuote,price=q&&!q.stale?(Number(q.bid)+Number(q.ask))/2:null;
+ $('ccCurrentPrice').textContent=price===null?'—':ccFormatPrice(price);
+ $('ccPriceAge').textContent=q?'Spread '+fmt(q.meta?.spread_points??0,1)+' points · âge '+fmt(q.age_seconds??0,1)+' s':'Tick MT5 indisponible';
+ $('ccLiquidityStatus').textContent=levels.length?'NIVEAUX '+levels.length+'/6':'HISTORIQUE INSUFFISANT';
+ $('ccLiquidityStatus').className='pill '+(levels.length?'green':'amber');
+ $('ccExternalLevels').innerHTML=levels.length?levels.map(x=>'<div class="cc-level"><span class="small">'+x.name+'</span><b>'+ccFormatPrice(x.price)+'</b><small>Période '+ccEsc(x.period)+'</small></div>').join(''):'<div class="notice">Importe des bougies Daily MT5 pour calculer PDH/PDL, PWH/PWL et PMH/PML.</div>';
+ const above=price===null?[]:levels.filter(x=>x.price>price).sort((a,b)=>a.price-b.price),below=price===null?[]:levels.filter(x=>x.price<price).sort((a,b)=>b.price-a.price);
+ $('ccNearestAbove').textContent=above.length?ccFormatPrice(above[0].price):'—';$('ccNearestAboveHint').textContent=above.length?above[0].name+' · '+fmt(above[0].price-price,2)+' au-dessus':'Aucun niveau au-dessus';
+ $('ccNearestBelow').textContent=below.length?ccFormatPrice(below[0].price):'—';$('ccNearestBelowHint').textContent=below.length?below[0].name+' · '+fmt(price-below[0].price,2)+' en dessous':'Aucun niveau en dessous';
+ const m5=closedOHLC('XAUUSD_M5'),dayKey=ccDateKey(now),sessions=[['ASIA','ccAsiaStart','ccAsiaEnd'],['LONDON','ccLondonStart','ccLondonEnd'],['NEW YORK','ccNyStart','ccNyEnd']];
+ $('ccSessionRanges').innerHTML=sessions.map(([name,a,b])=>{const r=ccSessionRange(m5,$(a).value,$(b).value,dayKey);return '<div class="cc-level"><span class="small">'+name+'</span><b>'+(r?'H '+ccFormatPrice(r.high)+' / L '+ccFormatPrice(r.low):'EN ATTENTE')+'</b><small>'+(r?r.count+' bougies · Paris':'Pas de bougies dans la plage')+'</small></div>'}).join('');
+ const sweeps=ccSweepOnLevels(levels);if(sweeps.length){$('ccSweepStatus').textContent=sweeps.map(x=>(x.direction==='bull'?'BALAYAGE SOUS ':'BALAYAGE AU-DESSUS ')+x.level.name+' · niveau '+ccFormatPrice(x.level.price)+' · clôture '+ccFormatPrice(x.bar.c)).join(' | ');$('ccSweepStatus').className='notice badbox';sweeps.forEach(x=>ccAlert('liq-sweep-'+x.bar.t+'-'+x.level.name,'Sweep de liquidité détecté',x.level.name+' balayé puis réintégré sur M5 à '+ccFormatPrice(x.level.price)+'.',x.direction==='bull'?'success':'warning',300000))}
+ else{$('ccSweepStatus').textContent='Aucun sweep externe confirmé sur la dernière bougie M5 clôturée. Les niveaux restent en surveillance.';$('ccSweepStatus').className='notice'}
+ if(price!==null&&levels.length){const near=levels.map(x=>({...x,d:Math.abs(x.price-price)})).sort((a,b)=>a.d-b.d)[0],threshold=Number($('ccNearDistance').value||3);if(near&&near.d<=threshold&&$('ccAlertLiquidity').checked)ccAlert('near-'+near.name,'Gold proche d’une liquidité',near.name+' à '+ccFormatPrice(near.price)+' · distance '+fmt(near.d,2)+'.','info',180000)}
+}
+function ccOrderBlockCandidate(rows,side,atr){
+ if(!rows||rows.length<5)return null;
+ for(let i=rows.length-1;i>=Math.max(2,rows.length-15);i--){const b=rows[i],body=Math.abs(b.c-b.o);if(body<(atr||0)*.8)continue;const aligned=side==='bull'?b.c>b.o:b.c<b.o;if(!aligned)continue;for(let j=i-1;j>=Math.max(0,i-4);j--){const p=rows[j],opposite=side==='bull'?p.c<p.o:p.c>p.o;if(opposite)return {low:p.l,high:p.h,at:p.t,side}}}
+ return null;
+}
+function ccScanSMC(){
+ const tf=$('ccScanTf').value,rows=closedOHLC('XAUUSD_'+tf),look=Number($('ccScanLookback').value||20);
+ if(!rows||rows.length<55){$('ccSmcStatus').textContent='55+ BOUGIES REQUISES';$('ccSmcStatus').className='pill amber';$('ccSmcRows').innerHTML='<div class="notice">Historique '+tf+' insuffisant. Le pont MT5 doit avoir importé au moins 55 bougies clôturées.</div>';return null}
+ const a=mktAnalyse(rows),last=rows[rows.length-1],atr=mktATR(rows),prev=rows.slice(-look-1,-1),priorHigh=Math.max(...prev.map(x=>x.h)),priorLow=Math.min(...prev.map(x=>x.l));
+ const sweep=last.l<priorLow&&last.c>priorLow?{side:'BULLISH',level:priorLow,extreme:last.l}:last.h>priorHigh&&last.c<priorHigh?{side:'BEARISH',level:priorHigh,extreme:last.h}:null;
+ const highs=mktPivots(rows,'high'),lows=mktPivots(rows,'low'),lastHigh=highs[highs.length-1],lastLow=lows[lows.length-1];
+ let structure='MIXTE';if(lastHigh&&last.c>lastHigh.p)structure='BOS HAUSSIER CANDIDAT';else if(lastLow&&last.c<lastLow.p)structure='BOS BAISSIER CANDIDAT';else structure=a.structure+' · '+a.bias;
+ const body=Math.abs(last.c-last.o),displacement=atr?body>=atr*.8:false,dispSide=last.c>last.o?'BULLISH':'BEARISH';
+ const fvg=mktRecentFvg(rows.slice(-55)),ob=ccOrderBlockCandidate(rows,dispSide,atr);
+ const range=rows.slice(-50),hi=Math.max(...range.map(x=>x.h)),lo=Math.min(...range.map(x=>x.l)),mid=(hi+lo)/2,pd=last.c>mid?'PREMIUM':last.c<mid?'DISCOUNT':'EQUILIBRIUM';
+ $('ccSmcStatus').textContent='ANALYSE '+tf+' · '+rows.length+' BARRES';$('ccSmcStatus').className='pill green';
+ $('ccSmcStructure').textContent=structure;$('ccSmcStructureHint').textContent='Close '+ccFormatPrice(last.c)+' · pivot H '+(lastHigh?ccFormatPrice(lastHigh.p):'—')+' / L '+(lastLow?ccFormatPrice(lastLow.p):'—');
+ $('ccSmcFvg').textContent=fvg?fvg.side:'AUCUN';$('ccSmcFvgHint').textContent=fvg?ccFormatPrice(fvg.low)+' – '+ccFormatPrice(fvg.high)+' · potentiel':'Pas de FVG récent détecté';
+ $('ccSmcPd').textContent=pd;$('ccSmcPdHint').textContent='Range 50 barres · EQ '+ccFormatPrice(mid);
+ const rowsOut=[
+ ['Sweep de liquidité',sweep?sweep.side+' · '+ccFormatPrice(sweep.level):'NON DÉTECTÉ',sweep?'Mèche hors range puis clôture dedans':'Aucun sweep sur la dernière barre clôturée'],
+ ['BOS / MSS',structure,structure.includes('CANDIDAT')?'Clôture au-delà du dernier pivot confirmé':'Pas de rupture de pivot récente confirmée'],
+ ['Displacement',displacement?dispSide+' · CORPS '+fmt(body,2):'NON DÉTECTÉ','Corps bougie / ATR(14) ≥ 0,80'],
+ ['FVG récent',fvg?fvg.side+' · '+ccFormatPrice(fvg.low)+'–'+ccFormatPrice(fvg.high):'NON DÉTECTÉ','Écart entre les mèches de 3 bougies'],
+ ['Order Block candidat',ob?ob.side+' · '+ccFormatPrice(ob.low)+'–'+ccFormatPrice(ob.high):'NON DÉTECTÉ','Dernière bougie opposée avant impulsion forte'],
+ ['Premium / Discount',pd,'Mesure sur le range des 50 dernières bougies']
+ ];
+ $('ccSmcRows').innerHTML='<table class="cc-table"><thead><tr><th>Élément</th><th>Lecture</th><th>Critère</th></tr></thead><tbody>'+rowsOut.map(r=>'<tr><td>'+r[0]+'</td><td>'+ccEsc(r[1])+'</td><td>'+ccEsc(r[2])+'</td></tr>').join('')+'</tbody></table>';
+ if(sweep&&$('ccAlertSweep').checked)ccAlert('smc-sweep-'+tf+'-'+last.t,'Sweep '+sweep.side+' repéré',tf+' · niveau '+ccFormatPrice(sweep.level)+' · extrême '+ccFormatPrice(sweep.extreme)+'.','warning',300000);
+ return {tf,last,a,sweep,structure,displacement,dispSide,fvg,ob,pd,hi,lo,mid};
+}
+function ccSessionControl(){
+ const p=ccParis(Date.now()/1000),mins=Number(p.hour)*60+Number(p.minute),targets=[['ASIA',$('ccAsiaStart').value,$('ccAsiaEnd').value],['LONDON',$('ccLondonStart').value,$('ccLondonEnd').value],['NEW YORK',$('ccNyStart').value,$('ccNyEnd').value]];
+ let active=targets.find(x=>{const a=ccTimeValue(x[1]),b=ccTimeValue(x[2]);return b>=a?mins>=a&&mins<b:mins>=a||mins<b});
+ const upcoming=targets.map(x=>({name:x[0],start:ccTimeValue(x[1])})).filter(x=>x.start>mins).sort((a,b)=>a.start-b.start)[0]||targets.map(x=>({name:x[0],start:ccTimeValue(x[1])})).sort((a,b)=>a.start-b.start)[0];
+ const diff=active?null:((upcoming.start-mins+1440)%1440);
+ $('ccSessionNow').textContent=active?active[0]+' · ACTIVE':'HORS SESSION';
+ $('ccSessionCountdown').textContent=active?'Fenêtre configurée '+active[1]+' – '+active[2]+' · heure de Paris':'Prochaine : '+upcoming.name+' dans '+Math.floor(diff/60)+' h '+(diff%60)+' min';
+ $('ccSessionStatus').textContent='Heure locale Paris : '+p.hour+':'+p.minute+' · Horaires adaptables en période été/hiver. Les amplitudes sont établies à partir des bougies M5 reçues.';
+}
+function ccEventsSave(){localStorage.setItem(CC_EVENTS_KEY,JSON.stringify(ccEvents))}
+function ccFormatDate(iso){const d=new Date(iso);return Number.isNaN(d.getTime())?iso:d.toLocaleString('fr-FR',{timeZone:'Europe/Paris'})}
+function ccActiveNews(){
+ const now=Date.now(),items=ccEvents.map(e=>({...e,ms:new Date(e.when).getTime()})).filter(e=>Number.isFinite(e.ms)).sort((a,b)=>a.ms-b.ms);
+ const active=items.find(e=>e.impact==='high'&&now>=e.ms-Number(e.before||0)*60000&&now<=e.ms+Number(e.after||0)*60000);
+ const next=items.find(e=>e.ms>now);
+ if(active){const rem=Math.max(0,Math.ceil((active.ms+Number(active.after||0)*60000-now)/60000));return {active,next,rem}}
+ return {active:null,next,rem:next?Math.ceil((next.ms-now)/60000):null}
+}
+function ccRenderNews(){
+ const news=ccActiveNews();
+ $('ccNewsStatus').textContent=news.active?'PAUSE NEWS · '+news.active.title:'AUCUNE PAUSE ACTIVE';
+ $('ccNewsStatus').className=news.active?'bad-text':'';
+ $('ccNewsCountdown').textContent=news.active?'Fenêtre de prudence active · fin dans '+news.rem+' min':news.next?'Prochaine '+news.next.impact+' : '+news.next.title+' · dans '+Math.floor(news.rem/60)+' h '+(news.rem%60)+' min':'Aucun événement enregistré.';
+ $('ccEventList').innerHTML=ccEvents.length?ccEvents.slice().sort((a,b)=>new Date(a.when)-new Date(b.when)).map(e=>'<div class="cc-event"><div><b>'+ccEsc(e.title)+'</b><small>'+ccFormatDate(e.when)+' · impact '+e.impact+' · pause '+e.before+' min avant / '+e.after+' min après</small></div><button class="btn" data-cc-delete="'+ccEsc(e.id)+'" aria-label="Supprimer">×</button></div>').join(''):'<div class="small">Aucun événement manuel ajouté.</div>';
+ document.querySelectorAll('[data-cc-delete]').forEach(b=>b.addEventListener('click',()=>{ccEvents=ccEvents.filter(e=>String(e.id)!==b.dataset.ccDelete);ccEventsSave();ccRenderNews()}));
+ if(news.active&&$('ccAlertNews').checked){const key=news.active.id;if(ccLastNewsWindow!==key){ccAlert('news-'+key,'Fenêtre macro à risque',news.active.title+' · plage de prudence élevée active. Vérifie le calendrier et évite les décisions précipitées.','warning',600000);ccLastNewsWindow=key}}
+ if(!news.active)ccLastNewsWindow=null;
+}
+function ccAddEvent(){
+ const title=$('ccEventTitle').value.trim(),when=$('ccEventTime').value;
+ if(!title||!when){$('ccNewsCountdown').textContent='Renseigne le nom et la date/heure de l’annonce.';return}
+ const ms=new Date(when).getTime();if(!Number.isFinite(ms)){return}
+ ccEvents.push({id:String(Date.now())+'-'+Math.random().toString(36).slice(2,6),title,when:new Date(ms).toISOString(),impact:$('ccEventImpact').value,before:Math.max(0,Math.min(240,Number($('ccEventBefore').value)||0)),after:Math.max(0,Math.min(240,Number($('ccEventAfter').value)||0))});
+ ccEventsSave();$('ccEventTitle').value='';ccRenderNews();
+}
+function ccCheckRow(label,value,state,detail){return '<div class="cc-check '+state+'"><span><b>'+label+'</b><small>'+detail+'</small></span><strong>'+value+'</strong></div>'}
+function ccRenderRisk(){
+ const s=mt5StatusCache,q=mt5LastQuote;
+ if(!s||!s.account){$('ccRiskChecks').innerHTML=ccCheckRow('Connexion du compte','ATTENTE','warn','Connecte MT5 pour contrôler les limites.');return}
+ const a=s.account,equity=Number(a.equity||0),margin=Number(a.margin||0),marginLevel=margin>0?equity/margin*100:null,pnl=Number(s.daily_realized_pnl_utc??$('dailyPnl').value??0),dailyMax=equity*Number($('dailyLimit').value||1)/100,maxRisk=equity*Math.min(.5,Number($('riskPct').value||.5))/100;
+ const spread=q?Number(q.meta?.spread_points??0):null,spreadOK=spread!==null&&spread<=Number($('ccMaxSpread').value||60)&&!q.stale,marginOK=marginLevel===null||marginLevel>=Number($('ccMinMargin').value||200),noSl=(s.positions||[]).some(p=>!p.sl),dailyOK:pnl>-dailyMax,openKnown=s.open_risk_cash!==null&&s.open_risk_cash!==undefined,open=Number(s.open_risk_cash||0),riskOK=openKnown&&open<maxRisk;
+ $('ccRiskPnl').textContent=fmt(pnl,2)+' '+(a.currency||'');$('ccRiskPnl').className='value '+(dailyOK?'cc-stat-good':'cc-stat-bad');$('ccRiskPnlHint').textContent='Plafond interne '+fmt(dailyMax,2)+' · calcul UTC';
+ $('ccMarginLevel').textContent=marginLevel===null?'—':fmt(marginLevel,0)+'%';$('ccMarginLevel').className='value '+(marginOK?'cc-stat-good':'cc-stat-bad');
+ $('ccOpenRisk').textContent=openKnown?fmt(open,2)+' '+(a.currency||''):'INCONNU';$('ccOpenRisk').className='value '+(riskOK?'cc-stat-good':'cc-stat-bad');$('ccOpenRiskHint').textContent=noSl?'Au moins une position sans SL':'Budget référence '+fmt(maxRisk,2);
+ const rows=[
+  ['Compte MT5',s.connected?'CONNECTÉ':'HORS LIGNE',s.connected?'good':'bad','Profil '+(s.profile||a.profile||'')+' · '+(a.server||'serveur non précisé')],
+  ['Tick Gold',q&&!q.stale?'FRAIS':'NON FIABLE',q&&!q.stale?'good':'bad',q?'Âge '+fmt(q.age_seconds,1)+' s':'Aucune cotation'],
+  ['Spread',spreadOK?'DANS LE SEUIL':'À VÉRIFIER',spreadOK?'good':'bad',spread===null?'Donnée indisponible':fmt(spread,1)+' / '+$('ccMaxSpread').value+' points'],
+  ['Positions / SL',noSl?'SL ABSENT':'STRUCTURE OK',noSl?'bad':'good',noSl?'Risque non calculable sans stop':'Contrôle des stops présents'],
+  ['Marge',marginOK?'OK':'MARGE FAIBLE',marginOK?'good':'bad',marginLevel===null?'Aucune marge utilisée':fmt(marginLevel,0)+'% · minimum '+$('ccMinMargin').value+'%'],
+  ['Perte journalière interne',dailyOK?'SOUS LIMITE':'LIMITE ATTEINTE',dailyOK?'good':'bad',fmt(pnl,2)+' / -'+fmt(dailyMax,2)+' '+(a.currency||'')],
+  ['Risque ouvert',riskOK?'CONNU / SOUS BUDGET':'INCONNU OU ÉLEVÉ',riskOK?'good':'bad',openKnown?fmt(open,2)+' / '+fmt(maxRisk,2):'SL absent ou risque de position non calculable']
+ ];
+ $('ccRiskChecks').innerHTML=rows.map(r=>ccCheckRow(...r)).join('');
+ const bad=rows.filter(r=>r[2]==='bad');if(bad.length)ccAlert('risk-'+bad.map(x=>x[0]).join('|'),'Risk Guardian · contrôle à vérifier',bad.map(x=>x[0]+': '+x[1]).join(' · '),'warning',120000);
+}
+function ccAlert(key,title,body,tone='info',cooldown=90000){
+ const now=Date.now(),last=ccAlertState.get(key)||0;if(now-last<cooldown)return;ccAlertState.set(key,now);
+ ccAlertLog.unshift({at:now,title,body,tone});ccAlertLog=ccAlertLog.slice(0,25);ccRenderAlerts();
+ if(ccNotificationState==='granted'&&typeof Notification!=='undefined'){try{new Notification(title,{body,tag:key})}catch{}}
+}
+function ccRenderAlerts(){
+ $('ccAlertFeed').innerHTML=ccAlertLog.length?ccAlertLog.map(a=>'<div class="cc-alert"><div><b>'+ccEsc(a.title)+'</b><small>'+new Date(a.at).toLocaleTimeString('fr-FR')+' · '+ccEsc(a.body)+'</small></div><span class="pill '+(a.tone==='warning'?'red':a.tone==='success'?'green':'amber')+'">'+a.tone.toUpperCase()+'</span></div>').join(''):'<div class="small">Aucune alerte détectée. Le moteur attend les données.</div>';
+}
+async function ccEnableNotifications(){
+ if(!('Notification'in window)){$('ccNotifyStatus').textContent='Notifications navigateur non supportées.';return}
+ try{ccNotificationState=await Notification.requestPermission();$('ccNotifyStatus').textContent=ccNotificationState==='granted'?'Notifications bureau autorisées. Laisse le navigateur ouvert.':'Autorisation refusée ou non accordée.'}
+ catch(e){$('ccNotifyStatus').textContent='Impossible de demander l’autorisation : '+e.message}
+}
+function ccObserve(){
+ const q=mt5LastQuote;
+ if(q&&$('ccAlertSpread').checked){
+  if(q.stale)ccAlert('tick-stale','Tick Gold périmé','Dernière cotation âgée de '+fmt(q.age_seconds,1)+' secondes.','warning',60000);
+  else if(Number(q.meta?.spread_points??0)>Number($('ccMaxSpread').value||60))ccAlert('spread-high','Spread Gold au-dessus du seuil',fmt(q.meta.spread_points,1)+' points ; seuil '+$('ccMaxSpread').value+'.','warning',120000);
+ }
+ const bias=autoGoldBias||'INCONNU';if(ccLastBias!==null&&bias!==ccLastBias&&$('ccAlertBias').checked)ccAlert('bias-change-'+bias,'Biais composite modifié','Le biais calculé du Gold est maintenant '+bias+'. Vérifie les timeframes et le contexte.','info',300000);ccLastBias=bias;
+}
+function ccRenderCommandCenter(){
+ ccRenderLiquidity();ccScanSMC();ccSessionControl();ccRenderNews();ccRenderRisk();ccObserve();
+ $('ccLastRefresh').textContent='Dernière analyse '+new Date().toLocaleTimeString('fr-FR')+' · calcul local sur bougies clôturées.';
+}
+function ccGroupHistory(deals){
+ const groups=new Map();deals.forEach(d=>{const id=Number(d.position_id||0);if(!id)return;let g=groups.get(id);if(!g){g={id,symbol:d.symbol,net:0,volume:0,side:Number(d.type)===0?'BUY':Number(d.type)===1?'SELL':'—',lastExit:0,hasExit:false,dealCount:0};groups.set(id,g)}
+  g.net+=Number(d.profit||0)+Number(d.commission||0)+Number(d.swap||0)+Number(d.fee||0);g.volume=Math.max(g.volume,Number(d.volume||0));g.dealCount++;
+  if([1,2,3].includes(Number(d.entry))){g.hasExit=true;g.lastExit=Math.max(g.lastExit,Number(d.time_msc||d.time*1000))}
+ });
+ return [...groups.values()].filter(g=>g.hasExit).sort((a,b)=>a.lastExit-b.lastExit);
+}
+function ccRenderPerformance(rows,ccy){
+ const n=rows.length,wins=rows.filter(x=>x.net>0),losses=rows.filter(x=>x.net<0),grossWin=wins.reduce((s,x)=>s+x.net,0),grossLoss=Math.abs(losses.reduce((s,x)=>s+x.net,0)),net=rows.reduce((s,x)=>s+x.net,0),pf=grossLoss?grossWin/grossLoss:grossWin>0?Infinity:null;
+ let equity=0,peak=0,maxDd=0;rows.forEach(x=>{equity+=x.net;peak=Math.max(peak,equity);maxDd=Math.max(maxDd,peak-equity)});
+ const avgWin=wins.length?grossWin/wins.length:null,avgLoss=losses.length?losses.reduce((s,x)=>s+x.net,0)/losses.length:null;
+ $('ccPerfTrades').textContent=n;$('ccPerfWin').textContent=n?fmt(wins.length/n*100,1)+'%':'—';$('ccPerfPf').textContent=pf===null?'—':pf===Infinity?'∞':fmt(pf,2);$('ccPerfNet').textContent=fmt(net,2)+' '+ccy;$('ccPerfNet').className='value '+(net>=0?'cc-stat-good':'cc-stat-bad');
+ $('ccPerfAvgWin').textContent=avgWin===null?'—':fmt(avgWin,2)+' '+ccy;$('ccPerfAvgLoss').textContent=avgLoss===null?'—':fmt(avgLoss,2)+' '+ccy;$('ccPerfDd').textContent=fmt(maxDd,2)+' '+ccy;
+ $('ccPerfTable').innerHTML=n?'<table class="cc-table"><thead><tr><th>Clôture</th><th>Position</th><th>Actif</th><th>Sens</th><th>Lot max.</th><th>Net</th><th>Deals</th></tr></thead><tbody>'+rows.slice().reverse().slice(0,60).map(x=>'<tr><td>'+new Date(x.lastExit).toLocaleString('fr-FR')+'</td><td>'+x.id+'</td><td>'+ccEsc(x.symbol)+'</td><td>'+x.side+'</td><td>'+fmt(x.volume,2)+'</td><td class="'+(x.net>=0?'cc-stat-good':'cc-stat-bad')+'">'+fmt(x.net,2)+' '+ccy+'</td><td>'+x.dealCount+'</td></tr>').join('')+'</tbody></table>':'<div class="notice">Aucune position clôturée trouvée dans la période sélectionnée.</div>';
+}
+async function ccLoadHistory(){
+ $('ccHistoryStatus').textContent='Lecture de l’historique MT5…';
+ try{
+  const days=Number($('ccHistoryDays').value||90),data=await mt5Request('/api/history?days='+days);
+  let rows=ccGroupHistory(data.deals||[]);const mapping=mt5Map(),gold=mapping.XAUUSD;
+  if($('ccHistorySymbol').value==='gold'&&gold)rows=rows.filter(x=>x.symbol===gold);
+  ccHistoryRows=rows;ccRenderPerformance(rows,mt5StatusCache?.account?.currency||currency());
+  $('ccHistoryStatus').textContent=rows.length+' positions clôturées · '+days+' jours · '+data.count+' deals reçus';
+ }catch(e){$('ccHistoryStatus').textContent='Historique indisponible : '+e.message}
+}
+function ccInit(){
+ ccLoadCfg();
+ ['AsiaStart','AsiaEnd','LondonStart','LondonEnd','NyStart','NyEnd','MaxSpread','MinMargin','NearDistance','ScanTf','ScanLookback'].forEach(k=>{const el=$('cc'+k);if(el)el.addEventListener('change',()=>{ccSaveCfg();ccRenderCommandCenter()})});
+ ['ccAlertLiquidity','ccAlertSweep','ccAlertBias','ccAlertSpread','ccAlertNews'].forEach(id=>$(id).addEventListener('change',()=>localStorage.setItem(CC_KEY,JSON.stringify({...ccCfg,[id]:$(id).checked}))));
+ $('ccRefreshBtn').onclick=ccRenderCommandCenter;$('ccScanTf').onchange=()=>{ccSaveCfg();ccScanSMC()};
+ $('ccAddEvent').onclick=ccAddEvent;$('ccEnableNotify').onclick=ccEnableNotifications;$('ccClearAlerts').onclick=()=>{ccAlertLog=[];ccRenderAlerts()};
+ $('ccLoadHistory').onclick=ccLoadHistory;$('ccHistoryDays').onchange=()=>{if(ccHistoryRows.length)ccLoadHistory()};$('ccHistorySymbol').onchange=()=>{if(ccHistoryRows.length)ccLoadHistory()};
+ document.querySelectorAll('[id^="ccAlert"]').forEach(el=>{if(el.type==='checkbox'&&ccCfg[el.id]!==undefined)el.checked=!!ccCfg[el.id]});
+ ccRenderAlerts();ccRenderCommandCenter();setInterval(()=>{ccSessionControl();ccRenderNews()},1000);
+}
+ccInit();
+// The command center is refreshed after market packs and ticks arrive; it never submits orders.
 </script></body></html>
