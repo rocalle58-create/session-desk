@@ -13,3 +13,7 @@ Ouvrir le site GitHub Pages. Les préparations et journaux sont conservés dans 
 - Journal, revue post-session, export JSON et impression PDF.
 
 Les données de marché ne sont pas chargées automatiquement. Vérifier les spécifications réelles du symbole dans MT5 ; les valeurs préremplies du calculateur sont illustratives. Cet outil ne constitue pas un conseil financier.
+
+
+## Publication
+GitHub Pages est configuré avec le workflow automatique `.github/workflows/pages.yml`.
